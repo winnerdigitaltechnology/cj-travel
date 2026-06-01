@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>目的地大全 - CJ的漫旅</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .page-hero {
+      background: linear-gradient(135deg, #0a3d7a 0%, #185fa5 50%, #1d9e75 100%);
+      padding: 48px 40px;
+      text-align: center;
+    }
+    .page-hero h1 { font-size: 32px; font-weight: 700; color: white; margin-bottom: 10px; }
+    .page-hero p { font-size: 16px; color: rgba(255,255,255,0.8); }
+    .content-section { padding: 40px; max-width: 1200px; margin: 0 auto; }
+    .dest-full-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .dest-full-card {
+      background: var(--card); border-radius: var(--radius);
+      overflow: hidden; border: 1px solid var(--border);
+      transition: transform .25s, box-shadow .25s;
+    }
+    .dest-full-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+    .dest-full-card.hidden { display: none; }
+    .card-img {
+      height: 160px; display: flex; align-items: center; justify-content: center;
+      font-size: 48px; position: relative;
+    }
+    .card-tag {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(255,255,255,0.92);
+      border-radius: 20px; padding: 3px 10px;
+      font-size: 12px; font-weight: 500; color: var(--text);
+    }
+    .card-body { padding: 18px; }
+    .card-body h3 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+    .card-region { font-size: 13px; color: var(--text-sub); margin-bottom: 12px; }
+    .card-highlights {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;
+    }
+    .hl-tag {
+      background: var(--bg); border-radius: 6px;
+      padding: 3px 10px; font-size: 12px; color: var(--text-sub);
+    }
+    .card-btn {
+      width: 100%; background: var(--primary); color: white;
+      border: none; border-radius: 8px; padding: 10px;
+      font-size: 14px; font-weight: 500; cursor: pointer;
+      transition: background .2s;
+    }
+    .card-btn:hover { background: var(--primary-dark); }
+    .tabs-wrap { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 28px; }
+    .tab-btn {
+      padding: 10px 20px; font-size: 14px; font-weight: 500;
+      color: var(--text-sub); cursor: pointer; border: none;
+      background: none; position: relative; transition: color .2s;
+    }
+    .tab-btn.active { color: var(--primary); }
+    .tab-btn.active::after {
+      content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
+      height: 2px; background: var(--primary);
+    }
+    @media (max-width: 540px) {
+      .page-hero { padding: 36px 20px; }
+      .content-section { padding: 24px 16px; }
+      .dest-full-grid { grid-template-columns: 1fr; }
+      .tabs-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="location.href='index.html'" style="cursor:pointer">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" fill="#1a7cdb"/>
+      <path d="M8 18c0-4 2.5-7 6-7s6 3 6 7" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <circle cx="14" cy="9.5" r="2.5" fill="white"/>
+      <path d="M10 22h8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    CJ的漫旅
+  </div>
+  <ul class="nav-links">
+    <li><a href="destinations.html" style="color:var(--primary)">目的地</a></li>
+    <li><a href="routes.html">热门路线</a></li>
+    <li><a href="index.html#ai-planner">AI规划师</a></li>
+    <li><a href="articles.html">游记攻略</a></li>
+    <li><a href="hotels.html">精品酒店</a></li>
+  </ul>
+  <button class="nav-cta" id="navLoginBtn" onclick="openAuth()">登录</button>
+  <div class="nav-user-area" id="navUserArea" style="display:none">
+    <span class="nav-user-email" id="userEmailDisplay"></span>
+    <a href="index.html#ai-planner" class="nav-cta" style="text-decoration:none;display:inline-block">AI 规划</a>
+    <button class="nav-logout" onclick="handleLogout()" title="退出登录">退出</button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <h1>探索梦想目的地</h1>
+  <p>从繁华都市到宁静海岛，发现属于你的完美旅程</p>
+</div>
+
+<div class="content-section">
+  <div class="tabs-wrap">
+    <button class="tab-btn active" onclick="filterDests('all', this)">全部</button>
+    <button class="tab-btn" onclick="filterDests('domestic', this)">国内</button>
+    <button class="tab-btn" onclick="filterDests('abroad', this)">出境</button>
+    <button class="tab-btn" onclick="filterDests('island', this)">海岛</button>
+    <button class="tab-btn" onclick="filterDests('nature', this)">自然风光</button>
+  </div>
+
+  <div class="dest-full-grid" id="destList"></div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h3>CJ的漫旅 · 智能旅游助手</h3>
+      <p>用科技让每一次旅行更美好。AI智能规划、精选目的地、专业旅行攻略，一站式旅行服务平台。</p>
+    </div>
+    <div class="footer-col">
+      <h4>目的地</h4>
+      <ul>
+        <li><a href="destinations.html">国内热门</a></li>
+        <li><a href="destinations.html">亚洲精选</a></li>
+        <li><a href="destinations.html">欧洲之旅</a></li>
+        <li><a href="destinations.html">海岛度假</a></li>
+        <li><a href="destinations.html">极地探险</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>服务</h4>
+      <ul>
+        <li><a href="index.html#ai-planner">AI行程规划</a></li>
+        <li><a href="destinations.html">机票预订</a></li>
+        <li><a href="hotels.html">酒店推荐</a></li>
+        <li><a href="articles.html">签证指南</a></li>
+        <li><a href="articles.html">旅行保险</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>关于</h4>
+      <ul>
+        <li><a href="about.html">关于CJ的漫旅</a></li>
+        <li><a href="about.html">帮助中心</a></li>
+        <li><a href="articles.html">用户协议</a></li>
+        <li><a href="articles.html">隐私政策</a></li>
+        <li><a href="about.html">联系我们</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 CJ的漫旅 · All rights reserved</span>
+    <span>用心呈现世界之美</span>
+  </div>
+</footer>
+
+<script>
+const allDestinations = [
+  {name:"北京",region:"中国 · 华北",tag:"domestic",label:"历史古都",hls:["故宫长城","胡同文化","皇家园林","京味美食"],color:"#c0392b"},
+  {name:"成都",region:"中国 · 四川",tag:"domestic",label:"天府之国",hls:["大熊猫基地","宽窄巷子","火锅美食","都江堰"],color:"#e74c3c"},
+  {name:"西安",region:"中国 · 陕西",tag:"domestic",label:"千年古都",hls:["兵马俑","古城墙","回民街","华清池"],color:"#d35400"},
+  {name:"桂林",region:"中国 · 广西",tag:"domestic",label:"山水甲天下",hls:["漓江竹筏","阳朔西街","龙脊梯田","象鼻山"],color:"#27ae60"},
+  {name:"拉萨",region:"中国 · 西藏",tag:"domestic",label:"圣城之光",hls:["布达拉宫","大昭寺","纳木错","藏式美食"],color:"#8e44ad"},
+  {name:"厦门",region:"中国 · 福建",tag:"domestic",label:"海上花园",hls:["鼓浪屿","南普陀寺","曾厝垵","环岛路"],color:"#2980b9"},
+  {name:"张家界",region:"中国 · 湖南",tag:"domestic",label:"奇峰仙境",hls:["天门山","袁家界","金鞭溪","凤凰古城"],color:"#16a085"},
+  {name:"香格里拉",region:"中国 · 云南",tag:"domestic",label:"人间天堂",hls:["松赞林寺","普达措","纳帕海","虎跳峡"],color:"#1abc9c"},
+  {name:"东京",region:"日本 · 关东",tag:"abroad",label:"亚洲潮流",hls:["涩谷十字路口","浅草寺","秋叶原","筑地市场"],color:"#e74c3c"},
+  {name:"京都",region:"日本 · 关西",tag:"abroad",label:"千年古韵",hls:["伏见稻荷","金阁寺","岚山竹林","祇园花见小路"],color:"#c0392b"},
+  {name:"曼谷",region:"泰国",tag:"abroad",label:"微笑之国",hls:["大皇宫","卧佛寺","考山路","水上市场"],color:"#f39c12"},
+  {name:"首尔",region:"韩国",tag:"abroad",label:"韩流之都",hls:["景福宫","明洞","北村韩屋","弘大"],color:"#e67e22"},
+  {name:"巴黎",region:"法国",tag:"abroad",label:"浪漫之都",hls:["埃菲尔铁塔","卢浮宫","塞纳河","蒙马特"],color:"#2c3e50"},
+  {name:"罗马",region:"意大利",tag:"abroad",label:"永恒之城",hls:["斗兽场","梵蒂冈","许愿池","西班牙台阶"],color:"#7f8c8d"},
+  {name:"纽约",region:"美国",tag:"abroad",label:"不夜城",hls:["自由女神","时代广场","中央公园","百老汇"],color:"#34495e"},
+  {name:"悉尼",region:"澳大利亚",tag:"abroad",label:"南半球明珠",hls:["歌剧院","海港大桥","邦迪海滩","蓝山"],color:"#3498db"},
+  {name:"马尔代夫",region:"印度洋",tag:"island",label:"印度洋明珠",hls:["水上别墅","浮潜天堂","海底餐厅","日落巡航"],color:"#00bcd4"},
+  {name:"巴厘岛",region:"印度尼西亚",tag:"island",label:"众神之岛",hls:["乌布梯田","海神庙","库塔海滩","SPA体验"],color:"#009688"},
+  {name:"普吉岛",region:"泰国",tag:"island",label:"安达曼明珠",hls:["皮皮岛跳岛","芭东海滩","老镇夜市","泰式按摩"],color:"#1abc9c"},
+  {name:"长滩岛",region:"菲律宾",tag:"island",label:"白沙天堂",hls:["白沙滩","落日风帆","卢霍山","D'Mall"],color:"#27ae60"},
+  {name:"毛里求斯",region:"印度洋",tag:"island",label:"印度洋宝石",hls:["七色土","海底瀑布","鹿岛","自然桥"],color:"#16a085"},
+  {name:"喀纳斯",region:"中国 · 新疆",tag:"nature",label:"北疆仙境",hls:["喀纳斯湖","禾木村","白哈巴","秋日金黄"],color:"#f39c12"},
+  {name:"九寨沟",region:"中国 · 四川",tag:"nature",label:"人间瑶池",hls:["五花海","诺日朗瀑布","珍珠滩","镜海"],color:"#27ae60"},
+  {name:"阿拉斯加",region:"美国",tag:"nature",label:"最后边疆",hls:["极光观赏","冰川巡航","迪纳利山","野生动物"],color:"#2980b9"},
+  {name:"挪威峡湾",region:"挪威",tag:"nature",label:"北欧风光",hls:["盖朗厄尔峡湾","奇迹石","布道石","罗弗敦"],color:"#2c3e50"},
+];
+
+function renderFiltered(filter = 'all') {
+  const grid = document.getElementById('destList');
+  const filtered = filter === 'all' ? allDestinations : allDestinations.filter(d => d.tag === filter);
+  grid.innerHTML = filtered.map(d => `
+    <div class="dest-full-card" data-cat="${d.tag}">
+      <div class="card-img" style="background:linear-gradient(135deg,${d.color},${d.color}88)">
+        <span style="opacity:0.3;font-size:64px">📍</span>
+        <span class="card-tag">${d.label}</span>
+      </div>
+      <div class="card-body">
+        <h3>${d.name}</h3>
+        <p class="card-region">${d.region}</p>
+        <div class="card-highlights">
+          ${d.hls.map(h => `<span class="hl-tag">${h}</span>`).join('')}
+        </div>
+        <button class="card-btn" onclick="goPlan('${d.name}')">规划行程 →</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterDests(cat, btn) {
+  document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderFiltered(cat);
+}
+
+function goPlan(name) {
+  location.href = `index.html#ai-planner`;
+  sessionStorage.setItem('planDest', `我想去${name}旅游，请帮我规划行程`);
+}
+
+renderFiltered('all');
+</script>
+
+<!-- 认证弹窗 -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">登录</button>
+      <button class="auth-tab" data-tab="signup" onclick="switchAuthTab('signup')">注册</button>
+    </div>
+    <div id="authError" class="auth-error"></div>
+
+    <div id="authLogin">
+      <label for="loginEmail">邮箱</label>
+      <input type="email" id="loginEmail" placeholder="your@email.com" />
+      <label for="loginPassword">密码</label>
+      <input type="password" id="loginPassword" placeholder="请输入密码" />
+      <button class="btn-save" style="width:100%;margin-top:16px" onclick="handleLogin()">登录</button>
+    </div>
+
+    <div id="authSignup" style="display:none">
+      <label for="signupEmail">邮箱</label>
+      <input type="email" id="signupEmail" placeholder="your@email.com" />
+      <label for="signupPassword">密码</label>
+      <input type="password" id="signupPassword" placeholder="至少6位密码" />
+      <button class="btn-save" style="width:100%;margin-top:16px" onclick="handleSignup()">注册</button>
+    </div>
+
+    <div class="modal-actions" style="margin-top:12px;justify-content:center">
+      <button class="btn-cancel" onclick="closeAuth()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="auth.js"></script>
+</body>
+</html>
