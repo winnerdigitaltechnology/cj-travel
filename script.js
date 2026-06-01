@@ -19,15 +19,16 @@ onUserLoggedOut = function() {
 // ============================================================
 // DESTINATION DATA
 // ============================================================
+const U = (id) => 'https://images.unsplash.com/photo-' + id + '?w=800&h=400&fit=crop&q=80';
 const destinations = [
-  { name:"京都·岚山", loc:"日本", badge:"出境热门", rating:"4.9", reviews:"2.3万", price:"¥12,800", unit:"/人起", color1:"#1a5276", color2:"#2980b9", emoji:"🎋", tag:"abroad" },
-  { name:"三亚·亚龙湾", loc:"海南", badge:"国内精选", rating:"4.8", reviews:"1.8万", price:"¥3,200", unit:"/人起", color1:"#0e6655", color2:"#1abc9c", emoji:"🏖️", tag:"island" },
-  { name:"丽江古城", loc:"云南", badge:"文化之旅", rating:"4.7", reviews:"3.1万", price:"¥2,800", unit:"/人起", color1:"#7b241c", color2:"#c0392b", emoji:"🏯", tag:"domestic" },
-  { name:"马尔代夫·北马累", loc:"马尔代夫", badge:"蜜月推荐", rating:"4.9", reviews:"5600", price:"¥18,500", unit:"/人起", color1:"#0e4f6e", color2:"#2596be", emoji:"🌹", tag:"island" },
-  { name:"川西稻城亚丁", loc:"四川", badge:"自然秘境", rating:"4.8", reviews:"1.2万", price:"¥5,600", unit:"/人起", color1:"#4a235a", color2:"#884ea0", emoji:"🏔️", tag:"nature" },
-  { name:"巴黎·圣心堂", loc:"法国", badge:"浪漫之都", rating:"4.8", reviews:"4.2万", price:"¥22,000", unit:"/人起", color1:"#2c3e50", color2:"#7f8c8d", emoji:"🛉", tag:"abroad" },
-  { name:"新疆喀纳斯", loc:"新疆", badge:"摄影圣地", rating:"4.9", reviews:"8800", price:"¥7,200", unit:"/人起", color1:"#145a32", color2:"#1e8449", emoji:"🌲", tag:"nature" },
-  { name:"厦门·鼓浪屿", loc:"福建", badge:"文艺小岛", rating:"4.7", reviews:"5.5万", price:"¥1,800", unit:"/人起", color1:"#1a5276", color2:"#5dade2", emoji:"🖍", tag:"domestic" },
+  { name:"京都·岚山", loc:"日本", badge:"出境热门", rating:"4.9", reviews:"2.3万", price:"¥12,800", unit:"/人起", color1:"#1a5276", color2:"#2980b9", emoji:"🎋", tag:"abroad", img:U("1493976040374-85c8e12f0c0e") },
+  { name:"三亚·亚龙湾", loc:"海南", badge:"国内精选", rating:"4.8", reviews:"1.8万", price:"¥3,200", unit:"/人起", color1:"#0e6655", color2:"#1abc9c", emoji:"🏖️", tag:"island", img:U("1540202404-a2f29016b523") },
+  { name:"丽江古城", loc:"云南", badge:"文化之旅", rating:"4.7", reviews:"3.1万", price:"¥2,800", unit:"/人起", color1:"#7b241c", color2:"#c0392b", emoji:"🏯", tag:"domestic", img:U("1528164344705-47542687000d") },
+  { name:"马尔代夫·北马累", loc:"马尔代夫", badge:"蜜月推荐", rating:"4.9", reviews:"5600", price:"¥18,500", unit:"/人起", color1:"#0e4f6e", color2:"#2596be", emoji:"🌹", tag:"island", img:U("1514282401047-d79a71a590e8") },
+  { name:"川西稻城亚丁", loc:"四川", badge:"自然秘境", rating:"4.8", reviews:"1.2万", price:"¥5,600", unit:"/人起", color1:"#4a235a", color2:"#884ea0", emoji:"🏔️", tag:"nature", img:U("1544735716-392fe2489ffa") },
+  { name:"巴黎·圣心堂", loc:"法国", badge:"浪漫之都", rating:"4.8", reviews:"4.2万", price:"¥22,000", unit:"/人起", color1:"#2c3e50", color2:"#7f8c8d", emoji:"🛉", tag:"abroad", img:U("1502602898657-3e91760cbb34") },
+  { name:"新疆喀纳斯", loc:"新疆", badge:"摄影圣地", rating:"4.9", reviews:"8800", price:"¥7,200", unit:"/人起", color1:"#145a32", color2:"#1e8449", emoji:"🌲", tag:"nature", img:U("1599661046289-e31897846e41") },
+  { name:"厦门·鼓浪屿", loc:"福建", badge:"文艺小岛", rating:"4.7", reviews:"5.5万", price:"¥1,800", unit:"/人起", color1:"#1a5276", color2:"#5dade2", emoji:"🖍", tag:"domestic", img:U("1599571234909-29ed5d1321d6") },
 ];
 
 function renderDestCards(filter) {
@@ -37,16 +38,7 @@ function renderDestCards(filter) {
   var filtered = filter === 'all' ? destinations : destinations.filter(function(d) { return d.tag === filter; });
   grid.innerHTML = filtered.map(function(d, i) {
     return '<div class="dest-card" onclick="planTrip(\'' + d.name + '\')">' +
-      '<div class="dest-img-wrapper">' +
-        '<svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg">' +
-          '<defs><linearGradient id="g' + i + '" x1="0%" y1="0%" x2="100%" y2="100%">' +
-            '<stop offset="0%" stop-color="' + d.color1 + '"/>' +
-            '<stop offset="100%" stop-color="' + d.color2 + '"/>' +
-          '</linearGradient></defs>' +
-          '<rect width="300" height="180" fill="url(#g' + i + ')"/>' +
-          '<text x="150" y="95" text-anchor="middle" dominant-baseline="middle" font-size="52" opacity="0.35">' + d.emoji + '</text>' +
-          '<text x="150" y="140" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-family="sans-serif">' + d.loc + '</text>' +
-        '</svg>' +
+      '<div class="dest-img-wrapper" style="background-image:url(' + d.img + ');background-size:cover;background-position:center;background-color:' + d.color1 + '">' +
         '<span class="dest-badge">' + d.badge + '</span>' +
         '<button class="dest-heart" onclick="event.stopPropagation();toggleHeart(this)">&#9825;</button>' +
       '</div>' +
