@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CJ的漫旅 · 智能旅游助手</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" fill="#1a7cdb"/>
+      <path d="M8 18c0-4 2.5-7 6-7s6 3 6 7" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <circle cx="14" cy="9.5" r="2.5" fill="white"/>
+      <path d="M10 22h8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    CJ的漫旅
+  </div>
+  <ul class="nav-links">
+    <li><a href="destinations.html">目的地</a></li>
+    <li><a href="routes.html">热门路线</a></li>
+    <li><a href="#ai-planner">AI规划师</a></li>
+    <li><a href="articles.html">游记攻略</a></li>
+    <li><a href="hotels.html">精品酒店</a></li>
+  </ul>
+  <button class="nav-cta" id="navLoginBtn" onclick="openAuth()">登录</button>
+  <div class="nav-user-area" id="navUserArea" style="display:none">
+    <span class="nav-user-email" id="userEmailDisplay"></span>
+    <button class="nav-cta" onclick="location.href='#ai-planner'">AI 规划</button>
+    <button class="nav-logout" onclick="handleLogout()" title="退出登录">退出</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <svg class="hero-bg-shapes" viewBox="0 0 1200 500" preserveAspectRatio="xMidYMid slice">
+    <circle cx="100" cy="100" r="200"/>
+    <circle cx="1100" cy="80" r="150"/>
+    <circle cx="600" cy="450" r="300"/>
+  </svg>
+  <div class="hero-tag">
+    <span></span>
+    AI 智能行程规划已上线
+  </div>
+  <h1>探索世界的<em>每一处美好</em><br>让AI为你量身定制</h1>
+  <p>基于智能算法与海量旅行数据，为你打造最适合的旅行体验。输入目的地，AI助手立即生成专属行程。</p>
+  <div class="search-bar">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="color:#9a9aaa;flex-shrink:0">
+      <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+      <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <input type="text" placeholder="想去哪里？输入城市、国家或景点名称..." id="heroSearch"/>
+    <button class="search-btn" onclick="handleSearch()">搜索目的地</button>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">2,400+</div>
+      <div class="stat-label">热门目的地</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">58万+</div>
+      <div class="stat-label">行程规划</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4.9★</div>
+      <div class="stat-label">用户评分</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">130+</div>
+      <div class="stat-label">覆盖国家</div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section>
+  <div class="section-header">
+    <div>
+      <div class="section-title">为什么选择CJ的漫旅？</div>
+      <div class="section-sub">智能 · 精准 · 省心的旅行规划体验</div>
+    </div>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#e8f3fd">🤖</div>
+      <div class="feature-title">AI 智能规划</div>
+      <div class="feature-desc">基于大语言模型，分析数百万条旅行数据，秒级生成个性化行程</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#e1f5ee">🗺️</div>
+      <div class="feature-title">实时路线优化</div>
+      <div class="feature-desc">结合交通、天气、节假日等因素，动态调整最优游览路线</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#fef3e2">💵</div>
+      <div class="feature-title">智能预算管理</div>
+      <div class="feature-desc">精准预估总花费，机票酒店餐饮一键对比，让每分钱都花在刀刃上</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#fbeaf0">🦊</div>
+      <div class="feature-title">多语言支持</div>
+      <div class="feature-desc">支持30+语言实时翻译，提供当地文化习俗及注意事项贴心提醒</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#eeedfe">📫</div>
+      <div class="feature-title">离线随行</div>
+      <div class="feature-desc">行程一键导出至手机，离线地图随时可查，无网络畅享旅行</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOT DESTINATIONS -->
+<section style="padding-top:0">
+  <div class="section-header">
+    <div>
+      <div class="section-title">热门目的地</div>
+      <div class="section-sub">精选全球高分旅行地，总有一处等你</div>
+    </div>
+    <a href="destinations.html" class="see-all">查看全部 →</a>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(this,'all')">全部</button>
+    <button class="tab" onclick="switchTab(this,'domestic')">国内</button>
+    <button class="tab" onclick="switchTab(this,'abroad')">出境</button>
+    <button class="tab" onclick="switchTab(this,'island')">海岛</button>
+    <button class="tab" onclick="switchTab(this,'nature')">自然风光</button>
+  </div>
+
+  <div class="dest-grid" id="destGrid">
+    <!-- Cards injected by JS -->
+  </div>
+</section>
+
+<!-- AI PLANNER -->
+<div class="ai-section" id="ai-planner">
+  <div class="ai-layout">
+    <div class="ai-intro">
+      <div class="ai-tag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        AI 智能行程规划师
+      </div>
+      <h2>告诉我你的想法，<br>我来帮你<em>规划一切</em></h2>
+      <p>只需说出你的目的地和天数，AI助手会综合考虑景点评分、路线合理性、餐饮住宿、当地特色，为你生成精准的逐日行程计划。</p>
+      <div class="ai-capabilities">
+        <div class="cap-item">
+          <div class="cap-dot" style="background:#1a7cdb"></div>
+          <span class="cap-text">逐日行程规划，精确到上午/下午/晚上</span>
+        </div>
+        <div class="cap-item">
+          <div class="cap-dot" style="background:#1d9e75"></div>
+          <span class="cap-text">个性化偏好匹配：文化游、美食游、亲子游...</span>
+        </div>
+        <div class="cap-item">
+          <div class="cap-dot" style="background:#f4890a"></div>
+          <span class="cap-text">预算区间智能推荐，经济/舒适/豪华任你选</span>
+        </div>
+        <div class="cap-item">
+          <div class="cap-dot" style="background:#d4537e"></div>
+          <span class="cap-text">动态调整，随时可以修改行程细节</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-container">
+      <div class="chat-header">
+        <div class="chat-avatar">🤖</div>
+        <div class="chat-header-info">
+          <div class="chat-name">CJ的漫旅 AI 规划师<span id="apiStatusBadge" class="api-status unset">请先登录</span></div>
+          <div class="chat-status"><span class="online-dot"></span>基于 DeepSeek 大模型</div>
+        </div>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg ai">
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-bubble">
+            你好！我是你的专属旅行规划师 ✈️<br><br>
+            告诉我你想去哪里、出行几天、大概预算是多少，我来帮你制定一份<strong>完美的行程安排</strong>！
+          </div>
+        </div>
+      </div>
+      <div class="chat-suggestions" id="chatSuggestions">
+        <span class="suggestion-chip" onclick="sendSuggestion(this)">📍 日本京都 5天4晚</span>
+        <span class="suggestion-chip" onclick="sendSuggestion(this)">🏖️ 三亚海岛 3天</span>
+        <span class="suggestion-chip" onclick="sendSuggestion(this)">🛉 欧洲法意 10天</span>
+        <span class="suggestion-chip" onclick="sendSuggestion(this)">🏔️ 西藏拉萨 7天</span>
+      </div>
+      <div class="chat-input-row">
+        <input class="chat-input" id="chatInput" placeholder="输入你的旅行想法..." onkeydown="handleKey(event)"/>
+        <button class="chat-send" onclick="sendMessage()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <path d="M22 2L15 22l-4-9-9-4 20-7z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOT ROUTES -->
+<section>
+  <div class="section-header">
+    <div>
+      <div class="section-title">精选热门路线</div>
+      <div class="section-sub">千万旅行者亲测推荐的经典线路</div>
+    </div>
+    <a href="routes.html" class="see-all">更多路线 →</a>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div class="routes-list">
+      <div class="route-item" onclick="location.href='routes.html'">
+        <div class="route-num">1</div>
+        <div class="route-info">
+          <div class="route-name">北京 → 西安 → 成都 经典中华文化游</div>
+          <div class="route-tags">
+            <span class="tag tag-blue">文化历史</span>
+            <span class="tag tag-amber">美食之旅</span>
+          </div>
+        </div>
+        <div class="route-meta">
+          <div class="route-days">10 天</div>
+          <div class="route-price">约¥6,800起</div>
+        </div>
+      </div>
+      <div class="route-item" onclick="location.href='routes.html'">
+        <div class="route-num">2</div>
+        <div class="route-info">
+          <div class="route-name">云南大理 → 丽江 → 香格里拉</div>
+          <div class="route-tags">
+            <span class="tag tag-green">自然风光</span>
+            <span class="tag tag-blue">民族风情</span>
+          </div>
+        </div>
+        <div class="route-meta">
+          <div class="route-days">8 天</div>
+          <div class="route-price">约¥5,200起</div>
+        </div>
+      </div>
+      <div class="route-item" onclick="location.href='routes.html'">
+        <div class="route-num">3</div>
+        <div class="route-info">
+          <div class="route-name">新疆伊犁 → 那拉提 → 喀纳斯</div>
+          <div class="route-tags">
+            <span class="tag tag-green">草原牧场</span>
+            <span class="tag tag-amber">摄影圣地</span>
+          </div>
+        </div>
+        <div class="route-meta">
+          <div class="route-days">12 天</div>
+          <div class="route-price">约¥9,500起</div>
+        </div>
+      </div>
+    </div>
+    <div class="routes-list">
+      <div class="route-item" onclick="location.href='routes.html'">
+        <div class="route-num">4</div>
+        <div class="route-info">
+          <div class="route-name">日本东京 → 大阪 → 京都精华游</div>
+          <div class="route-tags">
+            <span class="tag tag-blue">樱花季</span>
+            <span class="tag tag-amber">购物天堂</span>
+          </div>
+        </div>
+        <div class="route-meta">
+          <div class="route-days">8 天</div>
+          <div class="route-price">约¥12,000起</div>
+        </div>
+      </div>
+      <div class="route-item" onclick="location.href='routes.html'">
+        <div class="route-num">5</div>
+        <div class="route-info">
+          <div class="route-name">法国巴黎 → 意大利罗马 → 威尼斯</div>
+          <div class="route-tags">
+            <span class="tag tag-blue">艺术之旅</span>
+            <span class="tag tag-green">浪漫之行</span>
+          </div>
+        </div>
+        <div class="route-meta">
+          <div class="route-days">12 天</div>
+          <div class="route-price">约¥22,000起</div>
+        </div>
+      </div>
+      <div class="route-item" onclick="location.href='routes.html'">
+        <div class="route-num">6</div>
+        <div class="route-info">
+          <div class="route-name">马尔代夫 → 斯里兰卡 南亚岛屿游</div>
+          <div class="route-tags">
+            <span class="tag tag-blue">海岛度假</span>
+            <span class="tag tag-amber">蜜月首选</span>
+          </div>
+        </div>
+        <div class="route-meta">
+          <div class="route-days">9 天</div>
+          <div class="route-price">约¥18,000起</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- CTA BANNER -->
+<div class="cta-section">
+  <h2>你的下一段旅程，从这里开始</h2>
+  <p>加入超过58万旅行者，让AI为你规划专属旅行体验</p>
+  <div class="cta-buttons">
+    <button class="btn-white" onclick="document.getElementById('chatInput').focus();document.getElementById('ai-planner').scrollIntoView({behavior:'smooth'})">立即开始规划 ✈️</button>
+    <button class="btn-outline" onclick="location.href='routes.html'">查看精选路线</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h3>CJ的漫旅 · 智能旅游助手</h3>
+      <p>用科技让每一次旅行更美好。AI智能规划、精选目的地、专业旅行攻略，一站式旅行服务平台。</p>
+    </div>
+    <div class="footer-col">
+      <h4>目的地</h4>
+      <ul>
+        <li><a href="destinations.html">国内热门</a></li>
+        <li><a href="destinations.html">亚洲精选</a></li>
+        <li><a href="destinations.html">欧洲之旅</a></li>
+        <li><a href="destinations.html">海岛度假</a></li>
+        <li><a href="destinations.html">极地探险</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>服务</h4>
+      <ul>
+        <li><a href="#ai-planner">AI行程规划</a></li>
+        <li><a href="destinations.html">机票预订</a></li>
+        <li><a href="hotels.html">酒店推荐</a></li>
+        <li><a href="articles.html">签证指南</a></li>
+        <li><a href="articles.html">旅行保险</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>关于</h4>
+      <ul>
+        <li><a href="about.html">关于CJ的漫旅</a></li>
+        <li><a href="about.html">帮助中心</a></li>
+        <li><a href="articles.html">用户协议</a></li>
+        <li><a href="articles.html">隐私政策</a></li>
+        <li><a href="about.html">联系我们</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 CJ的漫旅 · All rights reserved</span>
+    <span>用心呈现世界之美</span>
+  </div>
+</footer>
+
+<!-- 登录 / 注册弹窗 -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">登录</button>
+      <button class="auth-tab" data-tab="signup" onclick="switchAuthTab('signup')">注册</button>
+    </div>
+    <div id="authError" class="auth-error"></div>
+
+    <!-- 登录表单 -->
+    <div id="authLogin">
+      <label for="loginEmail">邮箱</label>
+      <input type="email" id="loginEmail" placeholder="your@email.com" />
+      <label for="loginPassword">密码</label>
+      <input type="password" id="loginPassword" placeholder="请输入密码" />
+      <button class="btn-save" style="width:100%;margin-top:16px" onclick="handleLogin()">登录</button>
+    </div>
+
+    <!-- 注册表单 -->
+    <div id="authSignup" style="display:none">
+      <label for="signupEmail">邮箱</label>
+      <input type="email" id="signupEmail" placeholder="your@email.com" />
+      <label for="signupPassword">密码</label>
+      <input type="password" id="signupPassword" placeholder="至少6位密码" />
+      <button class="btn-save" style="width:100%;margin-top:16px" onclick="handleSignup()">注册</button>
+    </div>
+
+    <div class="modal-actions" style="margin-top:12px;justify-content:center">
+      <button class="btn-cancel" onclick="closeAuth()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="auth.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
