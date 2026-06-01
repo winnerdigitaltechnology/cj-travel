@@ -27,8 +27,10 @@
     .dest-full-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
     .dest-full-card.hidden { display: none; }
     .card-img {
-      height: 160px; display: flex; align-items: center; justify-content: center;
+      height: 200px; display: flex; align-items: flex-start; justify-content: flex-start;
       font-size: 48px; position: relative;
+      background-size: cover; background-position: center;
+      background-color: #dce8f4; background-repeat: no-repeat;
     }
     .card-tag {
       position: absolute; top: 12px; left: 12px;
@@ -160,32 +162,33 @@
 </footer>
 
 <script>
+const U = (id) => `https://images.unsplash.com/photo-${id}?w=800&h=400&fit=crop&q=80`;
 const allDestinations = [
-  {name:"北京",region:"中国 · 华北",tag:"domestic",label:"历史古都",hls:["故宫长城","胡同文化","皇家园林","京味美食"],color:"#c0392b"},
-  {name:"成都",region:"中国 · 四川",tag:"domestic",label:"天府之国",hls:["大熊猫基地","宽窄巷子","火锅美食","都江堰"],color:"#e74c3c"},
-  {name:"西安",region:"中国 · 陕西",tag:"domestic",label:"千年古都",hls:["兵马俑","古城墙","回民街","华清池"],color:"#d35400"},
-  {name:"桂林",region:"中国 · 广西",tag:"domestic",label:"山水甲天下",hls:["漓江竹筏","阳朔西街","龙脊梯田","象鼻山"],color:"#27ae60"},
-  {name:"拉萨",region:"中国 · 西藏",tag:"domestic",label:"圣城之光",hls:["布达拉宫","大昭寺","纳木错","藏式美食"],color:"#8e44ad"},
-  {name:"厦门",region:"中国 · 福建",tag:"domestic",label:"海上花园",hls:["鼓浪屿","南普陀寺","曾厝垵","环岛路"],color:"#2980b9"},
-  {name:"张家界",region:"中国 · 湖南",tag:"domestic",label:"奇峰仙境",hls:["天门山","袁家界","金鞭溪","凤凰古城"],color:"#16a085"},
-  {name:"香格里拉",region:"中国 · 云南",tag:"domestic",label:"人间天堂",hls:["松赞林寺","普达措","纳帕海","虎跳峡"],color:"#1abc9c"},
-  {name:"东京",region:"日本 · 关东",tag:"abroad",label:"亚洲潮流",hls:["涩谷十字路口","浅草寺","秋叶原","筑地市场"],color:"#e74c3c"},
-  {name:"京都",region:"日本 · 关西",tag:"abroad",label:"千年古韵",hls:["伏见稻荷","金阁寺","岚山竹林","祇园花见小路"],color:"#c0392b"},
-  {name:"曼谷",region:"泰国",tag:"abroad",label:"微笑之国",hls:["大皇宫","卧佛寺","考山路","水上市场"],color:"#f39c12"},
-  {name:"首尔",region:"韩国",tag:"abroad",label:"韩流之都",hls:["景福宫","明洞","北村韩屋","弘大"],color:"#e67e22"},
-  {name:"巴黎",region:"法国",tag:"abroad",label:"浪漫之都",hls:["埃菲尔铁塔","卢浮宫","塞纳河","蒙马特"],color:"#2c3e50"},
-  {name:"罗马",region:"意大利",tag:"abroad",label:"永恒之城",hls:["斗兽场","梵蒂冈","许愿池","西班牙台阶"],color:"#7f8c8d"},
-  {name:"纽约",region:"美国",tag:"abroad",label:"不夜城",hls:["自由女神","时代广场","中央公园","百老汇"],color:"#34495e"},
-  {name:"悉尼",region:"澳大利亚",tag:"abroad",label:"南半球明珠",hls:["歌剧院","海港大桥","邦迪海滩","蓝山"],color:"#3498db"},
-  {name:"马尔代夫",region:"印度洋",tag:"island",label:"印度洋明珠",hls:["水上别墅","浮潜天堂","海底餐厅","日落巡航"],color:"#00bcd4"},
-  {name:"巴厘岛",region:"印度尼西亚",tag:"island",label:"众神之岛",hls:["乌布梯田","海神庙","库塔海滩","SPA体验"],color:"#009688"},
-  {name:"普吉岛",region:"泰国",tag:"island",label:"安达曼明珠",hls:["皮皮岛跳岛","芭东海滩","老镇夜市","泰式按摩"],color:"#1abc9c"},
-  {name:"长滩岛",region:"菲律宾",tag:"island",label:"白沙天堂",hls:["白沙滩","落日风帆","卢霍山","D'Mall"],color:"#27ae60"},
-  {name:"毛里求斯",region:"印度洋",tag:"island",label:"印度洋宝石",hls:["七色土","海底瀑布","鹿岛","自然桥"],color:"#16a085"},
-  {name:"喀纳斯",region:"中国 · 新疆",tag:"nature",label:"北疆仙境",hls:["喀纳斯湖","禾木村","白哈巴","秋日金黄"],color:"#f39c12"},
-  {name:"九寨沟",region:"中国 · 四川",tag:"nature",label:"人间瑶池",hls:["五花海","诺日朗瀑布","珍珠滩","镜海"],color:"#27ae60"},
-  {name:"阿拉斯加",region:"美国",tag:"nature",label:"最后边疆",hls:["极光观赏","冰川巡航","迪纳利山","野生动物"],color:"#2980b9"},
-  {name:"挪威峡湾",region:"挪威",tag:"nature",label:"北欧风光",hls:["盖朗厄尔峡湾","奇迹石","布道石","罗弗敦"],color:"#2c3e50"},
+  {name:"北京",region:"中国 · 华北",tag:"domestic",label:"历史古都",hls:["故宫长城","胡同文化","皇家园林","京味美食"],color:"#c0392b",img:U("1547981609-4b6bfe67ca0b")},
+  {name:"成都",region:"中国 · 四川",tag:"domestic",label:"天府之国",hls:["大熊猫基地","宽窄巷子","火锅美食","都江堰"],color:"#e74c3c",img:U("1590559899731-a382839e5549")},
+  {name:"西安",region:"中国 · 陕西",tag:"domestic",label:"千年古都",hls:["兵马俑","古城墙","回民街","华清池"],color:"#d35400",img:U("1545569341-9eb8b30979d9")},
+  {name:"桂林",region:"中国 · 广西",tag:"domestic",label:"山水甲天下",hls:["漓江竹筏","阳朔西街","龙脊梯田","象鼻山"],color:"#27ae60",img:U("1599571234909-29ed5d1321d6")},
+  {name:"拉萨",region:"中国 · 西藏",tag:"domestic",label:"圣城之光",hls:["布达拉宫","大昭寺","纳木错","藏式美食"],color:"#8e44ad",img:U("1600269452121-4f2416e55c28")},
+  {name:"厦门",region:"中国 · 福建",tag:"domestic",label:"海上花园",hls:["鼓浪屿","南普陀寺","曾厝垵","环岛路"],color:"#2980b9",img:U("1599571234909-29ed5d1321d6")},
+  {name:"张家界",region:"中国 · 湖南",tag:"domestic",label:"奇峰仙境",hls:["天门山","袁家界","金鞭溪","凤凰古城"],color:"#16a085",img:U("1506905925346-21bda4d32df4")},
+  {name:"香格里拉",region:"中国 · 云南",tag:"domestic",label:"人间天堂",hls:["松赞林寺","普达措","纳帕海","虎跳峡"],color:"#1abc9c",img:U("1544735716-392fe2489ffa")},
+  {name:"东京",region:"日本 · 关东",tag:"abroad",label:"亚洲潮流",hls:["涩谷十字路口","浅草寺","秋叶原","筑地市场"],color:"#e74c3c",img:U("1536098561742-ca998e48cbcc")},
+  {name:"京都",region:"日本 · 关西",tag:"abroad",label:"千年古韵",hls:["伏见稻荷","金阁寺","岚山竹林","祇园花见小路"],color:"#c0392b",img:U("1493976040374-85c8e12f0c0e")},
+  {name:"曼谷",region:"泰国",tag:"abroad",label:"微笑之国",hls:["大皇宫","卧佛寺","考山路","水上市场"],color:"#f39c12",img:U("1508009603885-50cf7c579365")},
+  {name:"首尔",region:"韩国",tag:"abroad",label:"韩流之都",hls:["景福宫","明洞","北村韩屋","弘大"],color:"#e67e22",img:U("1534274988757-a28bf1a57c17")},
+  {name:"巴黎",region:"法国",tag:"abroad",label:"浪漫之都",hls:["埃菲尔铁塔","卢浮宫","塞纳河","蒙马特"],color:"#2c3e50",img:U("1502602898657-3e91760cbb34")},
+  {name:"罗马",region:"意大利",tag:"abroad",label:"永恒之城",hls:["斗兽场","梵蒂冈","许愿池","西班牙台阶"],color:"#7f8c8d",img:U("1552832230-c0197dd311b5")},
+  {name:"纽约",region:"美国",tag:"abroad",label:"不夜城",hls:["自由女神","时代广场","中央公园","百老汇"],color:"#34495e",img:U("1496442226666-8d4d0e62e6e9")},
+  {name:"悉尼",region:"澳大利亚",tag:"abroad",label:"南半球明珠",hls:["歌剧院","海港大桥","邦迪海滩","蓝山"],color:"#3498db",img:U("1506973035872-a4ec16b8e8d9")},
+  {name:"马尔代夫",region:"印度洋",tag:"island",label:"印度洋明珠",hls:["水上别墅","浮潜天堂","海底餐厅","日落巡航"],color:"#00bcd4",img:U("1514282401047-d79a71a590e8")},
+  {name:"巴厘岛",region:"印度尼西亚",tag:"island",label:"众神之岛",hls:["乌布梯田","海神庙","库塔海滩","SPA体验"],color:"#009688",img:U("1518548419970-58e3b4079ab2")},
+  {name:"普吉岛",region:"泰国",tag:"island",label:"安达曼明珠",hls:["皮皮岛跳岛","芭东海滩","老镇夜市","泰式按摩"],color:"#1abc9c",img:U("1589394815804-964ed0be2eb5")},
+  {name:"长滩岛",region:"菲律宾",tag:"island",label:"白沙天堂",hls:["白沙滩","落日风帆","卢霍山","D'Mall"],color:"#27ae60",img:U("1473181488821-2d23949a045a")},
+  {name:"毛里求斯",region:"印度洋",tag:"island",label:"印度洋宝石",hls:["七色土","海底瀑布","鹿岛","自然桥"],color:"#16a085",img:U("1513584684374-8bab748fbf90")},
+  {name:"喀纳斯",region:"中国 · 新疆",tag:"nature",label:"北疆仙境",hls:["喀纳斯湖","禾木村","白哈巴","秋日金黄"],color:"#f39c12",img:U("1599661046289-e31897846e41")},
+  {name:"九寨沟",region:"中国 · 四川",tag:"nature",label:"人间瑶池",hls:["五花海","诺日朗瀑布","珍珠滩","镜海"],color:"#27ae60",img:U("1540202404-a2f29016b523")},
+  {name:"阿拉斯加",region:"美国",tag:"nature",label:"最后边疆",hls:["极光观赏","冰川巡航","迪纳利山","野生动物"],color:"#2980b9",img:U("1464822759023-fed622ff2c3b")},
+  {name:"挪威峡湾",region:"挪威",tag:"nature",label:"北欧风光",hls:["盖朗厄尔峡湾","奇迹石","布道石","罗弗敦"],color:"#2c3e50",img:U("1441974231531-c6227db76b6e")},
 ];
 
 function renderFiltered(filter = 'all') {
@@ -193,8 +196,7 @@ function renderFiltered(filter = 'all') {
   const filtered = filter === 'all' ? allDestinations : allDestinations.filter(d => d.tag === filter);
   grid.innerHTML = filtered.map(d => `
     <div class="dest-full-card" data-cat="${d.tag}">
-      <div class="card-img" style="background:linear-gradient(135deg,${d.color},${d.color}88)">
-        <span style="opacity:0.3;font-size:64px">📍</span>
+      <div class="card-img" style="background-image:url(${d.img});background-size:cover;background-position:center;background-color:${d.color}22">
         <span class="card-tag">${d.label}</span>
       </div>
       <div class="card-body">
