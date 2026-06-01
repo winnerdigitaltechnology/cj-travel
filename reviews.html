@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>旅行者评价 - CJ的漫旅</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .page-hero {
+      background: linear-gradient(135deg, #0a3d7a 0%, #185fa5 50%, #1d9e75 100%);
+      padding: 48px 40px; text-align: center;
+    }
+    .page-hero h1 { font-size: 32px; font-weight: 700; color: white; margin-bottom: 10px; }
+    .page-hero p { font-size: 16px; color: rgba(255,255,255,0.8); }
+    .content-section { padding: 40px; max-width: 1100px; margin: 0 auto; }
+    .stats-bar {
+      display: flex; justify-content: center; gap: 48px;
+      background: var(--card); border-radius: var(--radius);
+      border: 1px solid var(--border); padding: 24px;
+      margin-bottom: 32px; flex-wrap: wrap; text-align: center;
+    }
+    .stat-item .stat-val { font-size: 28px; font-weight: 700; color: var(--primary); }
+    .stat-item .stat-lbl { font-size: 13px; color: var(--text-sub); margin-top: 4px; }
+    .reviews-full-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+    }
+    .review-full-card {
+      background: var(--card); border-radius: var(--radius);
+      border: 1px solid var(--border); padding: 24px;
+      transition: box-shadow .2s;
+    }
+    .review-full-card:hover { box-shadow: var(--shadow); }
+    .rev-header {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
+    }
+    .rev-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 600; color: white; flex-shrink: 0;
+    }
+    .rev-name { font-size: 15px; font-weight: 600; }
+    .rev-trip { font-size: 12px; color: var(--text-hint); }
+    .rev-stars { color: var(--accent); font-size: 14px; margin-bottom: 10px; }
+    .rev-text { font-size: 14px; color: var(--text-sub); line-height: 1.7; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="location.href='index.html'" style="cursor:pointer">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" fill="#1a7cdb"/>
+      <path d="M8 18c0-4 2.5-7 6-7s6 3 6 7" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <circle cx="14" cy="9.5" r="2.5" fill="white"/>
+      <path d="M10 22h8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    CJ的漫旅
+  </div>
+  <ul class="nav-links">
+    <li><a href="destinations.html">目的地</a></li>
+    <li><a href="routes.html">热门路线</a></li>
+    <li><a href="index.html#ai-planner">AI规划师</a></li>
+    <li><a href="articles.html">游记攻略</a></li>
+    <li><a href="hotels.html">精品酒店</a></li>
+  </ul>
+  <button class="nav-cta" id="navLoginBtn" onclick="openAuth()">登录</button>
+  <div class="nav-user-area" id="navUserArea" style="display:none">
+    <span class="nav-user-email" id="userEmailDisplay"></span>
+    <a href="index.html#ai-planner" class="nav-cta" style="text-decoration:none;display:inline-block">AI 规划</a>
+    <button class="nav-logout" onclick="handleLogout()" title="退出登录">退出</button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <h1>旅行者说</h1>
+  <p>听听他们的旅行故事</p>
+</div>
+
+<div class="content-section">
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-val">4.8/5</div><div class="stat-lbl">平均评分</div></div>
+    <div class="stat-item"><div class="stat-val">1,200+</div><div class="stat-lbl">旅行者评价</div></div>
+    <div class="stat-item"><div class="stat-val">98%</div><div class="stat-lbl">满意度</div></div>
+    <div class="stat-item"><div class="stat-val">50+</div><div class="stat-lbl">覆盖国家</div></div>
+  </div>
+
+  <div class="reviews-full-grid">
+    <div class="review-full-card">
+      <div class="rev-header">
+        <div class="rev-avatar" style="background:#1a7cdb">林</div>
+        <div><div class="rev-name">林小雨</div><div class="rev-trip">云南大理丽江6日</div></div>
+      </div>
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">这次的云南之行超出预期！行程安排非常合理，大理的洱海日出和丽江的玉龙雪山都让人震撼。导游小李特别专业又风趣，推荐了好多当地人才知道的美食小店。强烈推荐！</p>
+    </div>
+    <div class="review-full-card">
+      <div class="rev-header">
+        <div class="rev-avatar" style="background:#e74c3c">张</div>
+        <div><div class="rev-name">张明</div><div class="rev-trip">日本关西5日</div></div>
+      </div>
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">第一次带父母去日本，行程安排考虑到了老人的体力，节奏刚刚好。京都的岚山竹林和金阁寺美得不像话。下次想试试北海道线路！</p>
+    </div>
+    <div class="review-full-card">
+      <div class="rev-header">
+        <div class="rev-avatar" style="background:#d35400">王</div>
+        <div><div class="rev-name">王芳</div><div class="rev-trip">巴黎南法9日</div></div>
+      </div>
+      <div class="rev-stars">★★★★☆</div>
+      <p class="rev-text">整体非常满意！巴黎的行程很充实，南法的小镇太美了。唯一建议是阿维尼翁可以多留半天时间。服务团队响应很快，临时变更行程也很顺利。</p>
+    </div>
+    <div class="review-full-card">
+      <div class="rev-header">
+        <div class="rev-avatar" style="background:#27ae60">陈</div>
+        <div><div class="rev-name">陈浩</div><div class="rev-trip">冰岛环岛10日</div></div>
+      </div>
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">人生必去一次冰岛！看到了极光、冰川、瀑布，每一天都是震撼。钻石沙滩是我见过最美的风景。虽然有些路段比较辛苦，但领队照顾得很周到。</p>
+    </div>
+    <div class="review-full-card">
+      <div class="rev-header">
+        <div class="rev-avatar" style="background:#e84393">李</div>
+        <div><div class="rev-name">李婷</div><div class="rev-trip">马尔代夫度假</div></div>
+      </div>
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">蜜月选择CJ漫旅完全没有选错！从机票到酒店到水上活动安排得妥妥当当。水上别墅的体验太梦幻了，海底餐厅也是人生第一次。感谢团队的用心！</p>
+    </div>
+    <div class="review-full-card">
+      <div class="rev-header">
+        <div class="rev-avatar" style="background:#8e44ad">赵</div>
+        <div><div class="rev-name">赵磊</div><div class="rev-trip">川西环线7日</div></div>
+      </div>
+      <div class="rev-stars">★★★★☆</div>
+      <p class="rev-text">川西的风景真的绝了，四姑娘山、墨石公园、塔公草原，每一个地方都想多待几天。建议准备一些高反药物，海拔变化比较大。整体体验很棒！</p>
+    </div>
+    <div class="review-full-card">
+      <div class="rev-header">
+        <div class="rev-avatar" style="background:#00bcd4">吴</div>
+        <div><div class="rev-name">吴佳</div><div class="rev-trip">新西兰12日</div></div>
+      </div>
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">新西兰南北岛都走遍了，米尔福德峡湾的壮丽、蒂卡波湖的星空、皇后镇的极限运动…这个国家值得来无数次。行程安排张弛有度，非常完美。</p>
+    </div>
+    <div class="review-full-card">
+      <div class="rev-header">
+        <div class="rev-avatar" style="background:#f39c12">刘</div>
+        <div><div class="rev-name">刘洋</div><div class="rev-trip">泰国5日</div></div>
+      </div>
+      <div class="rev-stars">★★★★☆</div>
+      <p class="rev-text">第一次出国旅行选了泰国，性价比很高。芭提雅的珊瑚岛浮潜超好玩，曼谷的水上市场体验很独特。建议多安排一天自由购物时间。</p>
+    </div>
+    <div class="review-full-card">
+      <div class="rev-header">
+        <div class="rev-avatar" style="background:#c0392b">孙</div>
+        <div><div class="rev-name">孙雪</div><div class="rev-trip">埃及8日</div></div>
+      </div>
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">从小就梦想看金字塔，这次终于实现了！尼罗河游轮上的日落太美了，卢克索的神庙让人震撼。导游的历史知识非常丰富，每个景点都有详细讲解。</p>
+    </div>
+    <div class="review-full-card">
+      <div class="rev-header">
+        <div class="rev-avatar" style="background:#16a085">周</div>
+        <div><div class="rev-name">周杰</div><div class="rev-trip">桂林阳朔3日</div></div>
+      </div>
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">漓江竹筏漂流是此行亮点，两岸山水如画。阳朔西街的夜晚很有氛围，啤酒鱼的滋味至今难忘。短途旅行也能有高品质体验！</p>
+    </div>
+  </div>
+</div>
+
+<!-- 认证弹窗 -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">登录</button>
+      <button class="auth-tab" data-tab="signup" onclick="switchAuthTab('signup')">注册</button>
+    </div>
+    <div id="authError" class="auth-error"></div>
+
+    <div id="authLogin">
+      <label for="loginEmail">邮箱</label>
+      <input type="email" id="loginEmail" placeholder="your@email.com" />
+      <label for="loginPassword">密码</label>
+      <input type="password" id="loginPassword" placeholder="请输入密码" />
+      <button class="btn-save" style="width:100%;margin-top:16px" onclick="handleLogin()">登录</button>
+    </div>
+
+    <div id="authSignup" style="display:none">
+      <label for="signupEmail">邮箱</label>
+      <input type="email" id="signupEmail" placeholder="your@email.com" />
+      <label for="signupPassword">密码</label>
+      <input type="password" id="signupPassword" placeholder="至少6位密码" />
+      <button class="btn-save" style="width:100%;margin-top:16px" onclick="handleSignup()">注册</button>
+    </div>
+
+    <div class="modal-actions" style="margin-top:12px;justify-content:center">
+      <button class="btn-cancel" onclick="closeAuth()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="auth.js"></script>
+</body>
+</html>
