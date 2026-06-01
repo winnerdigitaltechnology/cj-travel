@@ -35,8 +35,10 @@
     .hotel-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
     .hotel-card.hidden { display: none; }
     .hotel-img {
-      height: 160px; display: flex; align-items: center; justify-content: center;
+      height: 200px; display: flex; align-items: flex-start; justify-content: flex-end;
       font-size: 40px; position: relative;
+      background-size: cover; background-position: center;
+      background-color: #dce8f4; background-repeat: no-repeat;
     }
     .hotel-stars {
       position: absolute; top: 12px; right: 12px;
@@ -144,19 +146,20 @@
 </footer>
 
 <script>
+const U = (id) => `https://images.unsplash.com/photo-${id}?w=800&h=400&fit=crop&q=80`;
 const hotels = [
-  {name:"北京瑰丽酒店",dest:"北京",stars:"★★★★★",price:"¥2,500 - ¥4,000",loc:"朝阳区CBD核心",desc:"坐落于CBD核心，俯瞰央视大楼，融合东方雅韵与现代奢华。",color:"#2c3e50"},
-  {name:"成都博舍酒店",dest:"成都",stars:"★★★★★",price:"¥1,800 - ¥3,000",loc:"太古里商圈",desc:"大慈寺旁的精品酒店，将传统川西建筑与现代设计完美融合。",color:"#27ae60"},
-  {name:"西安索菲特人民大厦",dest:"西安",stars:"★★★★★",price:"¥1,200 - ¥2,000",loc:"碑林区",desc:"历史悠久的国宾馆改造，园林式布局，步行可达钟楼。",color:"#d35400"},
-  {name:"桂林阳朔糖舍",dest:"桂林",stars:"★★★★☆",price:"¥800 - ¥1,500",loc:"阳朔漓江畔",desc:"由老糖厂改造的精品设计酒店，漓江美景尽收眼底。",color:"#16a085"},
-  {name:"东京安缦",dest:"东京",stars:"★★★★★",price:"¥5,000 - ¥8,000",loc:"大手町",desc:"东京市中心的都市绿洲，极简日式美学与顶级服务的完美结合。",color:"#e74c3c"},
-  {name:"京都翠岚豪华精选",dest:"京都",stars:"★★★★★",price:"¥3,500 - ¥6,000",loc:"岚山",desc:"坐拥保津川美景，体验传统日式温泉与怀石料理。",color:"#c0392b"},
-  {name:"巴黎Le Marais精品酒店",dest:"巴黎",stars:"★★★★☆",price:"¥1,500 - ¥2,500",loc:"玛黑区",desc:"位于巴黎最具活力的街区，步行可达圣母院与孚日广场。",color:"#2c3e50"},
-  {name:"曼谷文华东方",dest:"曼谷",stars:"★★★★★",price:"¥2,000 - ¥3,500",loc:"湄南河畔",desc:"湄南河畔的经典传奇，拥有百年历史的东方待客之道。",color:"#f39c12"},
-  {name:"马尔代夫Soneva Fushi",dest:"马尔代夫",stars:"★★★★★",price:"¥8,000 - ¥15,000",loc:"巴阿环礁",desc:"顶级水上别墅，私人管家服务，赤足奢华的代名词。",color:"#00bcd4"},
-  {name:"巴厘岛乌布空中花园",dest:"巴厘岛",stars:"★★★★☆",price:"¥1,000 - ¥2,000",loc:"乌布",desc:"悬崖泳池面对热带雨林，梯田美景环绕的浪漫度假村。",color:"#009688"},
-  {name:"普吉岛悦榕庄",dest:"普吉岛",stars:"★★★★★",price:"¥2,500 - ¥4,000",loc:"乐古浪",desc:"泰式SPA圣地，私人泳池别墅隐于热带花园之中。",color:"#1abc9c"},
-  {name:"香格里拉松赞林卡",dest:"香格里拉",stars:"★★★★★",price:"¥2,000 - ¥3,500",loc:"松赞林寺旁",desc:"藏式精品酒店，远眺松赞林寺与雪山，体验藏族文化。",color:"#8e44ad"},
+  {name:"北京瑰丽酒店",dest:"北京",stars:"★★★★★",price:"¥2,500 - ¥4,000",loc:"朝阳区CBD核心",desc:"坐落于CBD核心，俯瞰央视大楼，融合东方雅韵与现代奢华。",color:"#2c3e50",img:U("1547981609-4b6bfe67ca0b")},
+  {name:"成都博舍酒店",dest:"成都",stars:"★★★★★",price:"¥1,800 - ¥3,000",loc:"太古里商圈",desc:"大慈寺旁的精品酒店，将传统川西建筑与现代设计完美融合。",color:"#27ae60",img:U("1590559899731-a382839e5549")},
+  {name:"西安索菲特人民大厦",dest:"西安",stars:"★★★★★",price:"¥1,200 - ¥2,000",loc:"碑林区",desc:"历史悠久的国宾馆改造，园林式布局，步行可达钟楼。",color:"#d35400",img:U("1545569341-9eb8b30979d9")},
+  {name:"桂林阳朔糖舍",dest:"桂林",stars:"★★★★☆",price:"¥800 - ¥1,500",loc:"阳朔漓江畔",desc:"由老糖厂改造的精品设计酒店，漓江美景尽收眼底。",color:"#16a085",img:U("1599571234909-29ed5d1321d6")},
+  {name:"东京安缦",dest:"东京",stars:"★★★★★",price:"¥5,000 - ¥8,000",loc:"大手町",desc:"东京市中心的都市绿洲，极简日式美学与顶级服务的完美结合。",color:"#e74c3c",img:U("1536098561742-ca998e48cbcc")},
+  {name:"京都翠岚豪华精选",dest:"京都",stars:"★★★★★",price:"¥3,500 - ¥6,000",loc:"岚山",desc:"坐拥保津川美景，体验传统日式温泉与怀石料理。",color:"#c0392b",img:U("1493976040374-85c8e12f0c0e")},
+  {name:"巴黎Le Marais精品酒店",dest:"巴黎",stars:"★★★★☆",price:"¥1,500 - ¥2,500",loc:"玛黑区",desc:"位于巴黎最具活力的街区，步行可达圣母院与孚日广场。",color:"#2c3e50",img:U("1502602898657-3e91760cbb34")},
+  {name:"曼谷文华东方",dest:"曼谷",stars:"★★★★★",price:"¥2,000 - ¥3,500",loc:"湄南河畔",desc:"湄南河畔的经典传奇，拥有百年历史的东方待客之道。",color:"#f39c12",img:U("1508009603885-50cf7c579365")},
+  {name:"马尔代夫Soneva Fushi",dest:"马尔代夫",stars:"★★★★★",price:"¥8,000 - ¥15,000",loc:"巴阿环礁",desc:"顶级水上别墅，私人管家服务，赤足奢华的代名词。",color:"#00bcd4",img:U("1514282401047-d79a71a590e8")},
+  {name:"巴厘岛乌布空中花园",dest:"巴厘岛",stars:"★★★★☆",price:"¥1,000 - ¥2,000",loc:"乌布",desc:"悬崖泳池面对热带雨林，梯田美景环绕的浪漫度假村。",color:"#009688",img:U("1518548419970-58e3b4079ab2")},
+  {name:"普吉岛悦榕庄",dest:"普吉岛",stars:"★★★★★",price:"¥2,500 - ¥4,000",loc:"乐古浪",desc:"泰式SPA圣地，私人泳池别墅隐于热带花园之中。",color:"#1abc9c",img:U("1589394815804-964ed0be2eb5")},
+  {name:"香格里拉松赞林卡",dest:"香格里拉",stars:"★★★★★",price:"¥2,000 - ¥3,500",loc:"松赞林寺旁",desc:"藏式精品酒店，远眺松赞林寺与雪山，体验藏族文化。",color:"#8e44ad",img:U("1544735716-392fe2489ffa")},
 ];
 
 function renderHotels(filter = 'all') {
@@ -164,8 +167,7 @@ function renderHotels(filter = 'all') {
   const filtered = filter === 'all' ? hotels : hotels.filter(h => h.dest === filter);
   grid.innerHTML = filtered.map(h => `
     <div class="hotel-card" data-dest="${h.dest}">
-      <div class="hotel-img" style="background:linear-gradient(135deg,${h.color},${h.color}66)">
-        <span style="opacity:0.3;font-size:48px">🏨</span>
+      <div class="hotel-img" style="background-image:url(${h.img});background-size:cover;background-position:center;background-color:${h.color}33">
         <span class="hotel-stars">${h.stars}</span>
       </div>
       <div class="hotel-body">
