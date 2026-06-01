@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>酒店推荐 - CJ的漫旅</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .page-hero {
+      background: linear-gradient(135deg, #0a3d7a 0%, #185fa5 50%, #1d9e75 100%);
+      padding: 48px 40px; text-align: center;
+    }
+    .page-hero h1 { font-size: 32px; font-weight: 700; color: white; margin-bottom: 10px; }
+    .page-hero p { font-size: 16px; color: rgba(255,255,255,0.8); }
+    .content-section { padding: 40px; max-width: 1100px; margin: 0 auto; }
+    .filter-bar {
+      display: flex; align-items: center; gap: 14px;
+      margin-bottom: 28px; flex-wrap: wrap;
+    }
+    .filter-bar select {
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 9px 16px; font-size: 14px; outline: none;
+      background: white; cursor: pointer;
+    }
+    .hotel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .hotel-card {
+      background: var(--card); border-radius: var(--radius);
+      overflow: hidden; border: 1px solid var(--border);
+      transition: transform .25s, box-shadow .25s;
+    }
+    .hotel-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+    .hotel-card.hidden { display: none; }
+    .hotel-img {
+      height: 160px; display: flex; align-items: center; justify-content: center;
+      font-size: 40px; position: relative;
+    }
+    .hotel-stars {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(255,255,255,0.9); border-radius: 20px;
+      padding: 3px 12px; font-size: 12px; color: var(--accent);
+    }
+    .hotel-body { padding: 18px; }
+    .hotel-body h3 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+    .hotel-loc { font-size: 13px; color: var(--text-sub); margin-bottom: 8px; }
+    .hotel-price { font-size: 17px; font-weight: 600; color: var(--primary); margin-bottom: 8px; }
+    .hotel-price span { font-size: 12px; font-weight: 400; color: var(--text-hint); }
+    .hotel-desc { font-size: 13px; color: var(--text-sub); line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="location.href='index.html'" style="cursor:pointer">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" fill="#1a7cdb"/>
+      <path d="M8 18c0-4 2.5-7 6-7s6 3 6 7" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <circle cx="14" cy="9.5" r="2.5" fill="white"/>
+      <path d="M10 22h8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    CJ的漫旅
+  </div>
+  <ul class="nav-links">
+    <li><a href="destinations.html">目的地</a></li>
+    <li><a href="routes.html">热门路线</a></li>
+    <li><a href="index.html#ai-planner">AI规划师</a></li>
+    <li><a href="articles.html">游记攻略</a></li>
+    <li><a href="hotels.html" style="color:var(--primary)">精品酒店</a></li>
+  </ul>
+  <button class="nav-cta" id="navLoginBtn" onclick="openAuth()">登录</button>
+  <div class="nav-user-area" id="navUserArea" style="display:none">
+    <span class="nav-user-email" id="userEmailDisplay"></span>
+    <a href="index.html#ai-planner" class="nav-cta" style="text-decoration:none;display:inline-block">AI 规划</a>
+    <button class="nav-logout" onclick="handleLogout()" title="退出登录">退出</button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <h1>精选酒店推荐</h1>
+  <p>为你的旅程选择理想住所</p>
+</div>
+
+<div class="content-section">
+  <div class="filter-bar">
+    <label style="font-size:14px;font-weight:500">筛选目的地：</label>
+    <select id="hotelFilter" onchange="filterHotels()">
+      <option value="all">全部酒店</option>
+      <option value="北京">北京</option>
+      <option value="成都">成都</option>
+      <option value="西安">西安</option>
+      <option value="桂林">桂林</option>
+      <option value="东京">东京</option>
+      <option value="京都">京都</option>
+      <option value="巴黎">巴黎</option>
+      <option value="曼谷">曼谷</option>
+      <option value="马尔代夫">马尔代夫</option>
+      <option value="巴厘岛">巴厘岛</option>
+      <option value="普吉岛">普吉岛</option>
+      <option value="香格里拉">香格里拉</option>
+    </select>
+  </div>
+
+  <div class="hotel-grid" id="hotelList"></div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h3>CJ的漫旅 · 智能旅游助手</h3>
+      <p>用科技让每一次旅行更美好。</p>
+    </div>
+    <div class="footer-col">
+      <h4>目的地</h4>
+      <ul>
+        <li><a href="destinations.html">国内热门</a></li>
+        <li><a href="destinations.html">亚洲精选</a></li>
+        <li><a href="destinations.html">欧洲之旅</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>服务</h4>
+      <ul>
+        <li><a href="index.html#ai-planner">AI行程规划</a></li>
+        <li><a href="hotels.html">酒店推荐</a></li>
+        <li><a href="articles.html">签证指南</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>关于</h4>
+      <ul>
+        <li><a href="about.html">关于CJ的漫旅</a></li>
+        <li><a href="about.html">帮助中心</a></li>
+        <li><a href="about.html">联系我们</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 CJ的漫旅 · All rights reserved</span>
+    <span>用心呈现世界之美</span>
+  </div>
+</footer>
+
+<script>
+const hotels = [
+  {name:"北京瑰丽酒店",dest:"北京",stars:"★★★★★",price:"¥2,500 - ¥4,000",loc:"朝阳区CBD核心",desc:"坐落于CBD核心，俯瞰央视大楼，融合东方雅韵与现代奢华。",color:"#2c3e50"},
+  {name:"成都博舍酒店",dest:"成都",stars:"★★★★★",price:"¥1,800 - ¥3,000",loc:"太古里商圈",desc:"大慈寺旁的精品酒店，将传统川西建筑与现代设计完美融合。",color:"#27ae60"},
+  {name:"西安索菲特人民大厦",dest:"西安",stars:"★★★★★",price:"¥1,200 - ¥2,000",loc:"碑林区",desc:"历史悠久的国宾馆改造，园林式布局，步行可达钟楼。",color:"#d35400"},
+  {name:"桂林阳朔糖舍",dest:"桂林",stars:"★★★★☆",price:"¥800 - ¥1,500",loc:"阳朔漓江畔",desc:"由老糖厂改造的精品设计酒店，漓江美景尽收眼底。",color:"#16a085"},
+  {name:"东京安缦",dest:"东京",stars:"★★★★★",price:"¥5,000 - ¥8,000",loc:"大手町",desc:"东京市中心的都市绿洲，极简日式美学与顶级服务的完美结合。",color:"#e74c3c"},
+  {name:"京都翠岚豪华精选",dest:"京都",stars:"★★★★★",price:"¥3,500 - ¥6,000",loc:"岚山",desc:"坐拥保津川美景，体验传统日式温泉与怀石料理。",color:"#c0392b"},
+  {name:"巴黎Le Marais精品酒店",dest:"巴黎",stars:"★★★★☆",price:"¥1,500 - ¥2,500",loc:"玛黑区",desc:"位于巴黎最具活力的街区，步行可达圣母院与孚日广场。",color:"#2c3e50"},
+  {name:"曼谷文华东方",dest:"曼谷",stars:"★★★★★",price:"¥2,000 - ¥3,500",loc:"湄南河畔",desc:"湄南河畔的经典传奇，拥有百年历史的东方待客之道。",color:"#f39c12"},
+  {name:"马尔代夫Soneva Fushi",dest:"马尔代夫",stars:"★★★★★",price:"¥8,000 - ¥15,000",loc:"巴阿环礁",desc:"顶级水上别墅，私人管家服务，赤足奢华的代名词。",color:"#00bcd4"},
+  {name:"巴厘岛乌布空中花园",dest:"巴厘岛",stars:"★★★★☆",price:"¥1,000 - ¥2,000",loc:"乌布",desc:"悬崖泳池面对热带雨林，梯田美景环绕的浪漫度假村。",color:"#009688"},
+  {name:"普吉岛悦榕庄",dest:"普吉岛",stars:"★★★★★",price:"¥2,500 - ¥4,000",loc:"乐古浪",desc:"泰式SPA圣地，私人泳池别墅隐于热带花园之中。",color:"#1abc9c"},
+  {name:"香格里拉松赞林卡",dest:"香格里拉",stars:"★★★★★",price:"¥2,000 - ¥3,500",loc:"松赞林寺旁",desc:"藏式精品酒店，远眺松赞林寺与雪山，体验藏族文化。",color:"#8e44ad"},
+];
+
+function renderHotels(filter = 'all') {
+  const grid = document.getElementById('hotelList');
+  const filtered = filter === 'all' ? hotels : hotels.filter(h => h.dest === filter);
+  grid.innerHTML = filtered.map(h => `
+    <div class="hotel-card" data-dest="${h.dest}">
+      <div class="hotel-img" style="background:linear-gradient(135deg,${h.color},${h.color}66)">
+        <span style="opacity:0.3;font-size:48px">🏨</span>
+        <span class="hotel-stars">${h.stars}</span>
+      </div>
+      <div class="hotel-body">
+        <h3>${h.name}</h3>
+        <p class="hotel-loc">${h.loc}</p>
+        <p class="hotel-price">${h.price}<span> / 晚</span></p>
+        <p class="hotel-desc">${h.desc}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterHotels() {
+  renderHotels(document.getElementById('hotelFilter').value);
+}
+
+renderHotels();
+</script>
+
+<!-- 认证弹窗 -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">登录</button>
+      <button class="auth-tab" data-tab="signup" onclick="switchAuthTab('signup')">注册</button>
+    </div>
+    <div id="authError" class="auth-error"></div>
+
+    <div id="authLogin">
+      <label for="loginEmail">邮箱</label>
+      <input type="email" id="loginEmail" placeholder="your@email.com" />
+      <label for="loginPassword">密码</label>
+      <input type="password" id="loginPassword" placeholder="请输入密码" />
+      <button class="btn-save" style="width:100%;margin-top:16px" onclick="handleLogin()">登录</button>
+    </div>
+
+    <div id="authSignup" style="display:none">
+      <label for="signupEmail">邮箱</label>
+      <input type="email" id="signupEmail" placeholder="your@email.com" />
+      <label for="signupPassword">密码</label>
+      <input type="password" id="signupPassword" placeholder="至少6位密码" />
+      <button class="btn-save" style="width:100%;margin-top:16px" onclick="handleSignup()">注册</button>
+    </div>
+
+    <div class="modal-actions" style="margin-top:12px;justify-content:center">
+      <button class="btn-cancel" onclick="closeAuth()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="auth.js"></script>
+</body>
+</html>
