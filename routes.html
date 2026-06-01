@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>精选路线 - CJ的漫旅</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .page-hero {
+      background: linear-gradient(135deg, #0a3d7a 0%, #185fa5 50%, #1d9e75 100%);
+      padding: 48px 40px; text-align: center;
+    }
+    .page-hero h1 { font-size: 32px; font-weight: 700; color: white; margin-bottom: 10px; }
+    .page-hero p { font-size: 16px; color: rgba(255,255,255,0.8); }
+    .content-section { padding: 40px; max-width: 1000px; margin: 0 auto; }
+    .route-full-card {
+      background: var(--card); border-radius: var(--radius);
+      border: 1px solid var(--border); margin-bottom: 20px;
+      overflow: hidden; transition: box-shadow .2s;
+    }
+    .route-full-card:hover { box-shadow: var(--shadow); }
+    .route-top {
+      padding: 24px; display: flex; justify-content: space-between;
+      align-items: flex-start; cursor: pointer; flex-wrap: wrap; gap: 12px;
+    }
+    .route-top h2 { font-size: 20px; font-weight: 600; }
+    .route-meta-row {
+      display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;
+    }
+    .meta-badge {
+      background: var(--bg); border-radius: 6px;
+      padding: 4px 12px; font-size: 13px; color: var(--text-sub);
+    }
+    .route-days-big { font-size: 18px; font-weight: 600; color: var(--primary); white-space: nowrap; }
+    .route-itinerary {
+      display: none; padding: 0 24px 24px;
+      border-top: 1px solid var(--border);
+    }
+    .route-itinerary.open { display: block; }
+    .day-item {
+      display: flex; gap: 14px; padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .day-item:last-child { border-bottom: none; }
+    .day-num {
+      font-size: 13px; font-weight: 600; color: var(--primary);
+      background: var(--primary-light); border-radius: 6px;
+      padding: 4px 10px; white-space: nowrap; height: fit-content;
+    }
+    .day-desc { font-size: 14px; color: var(--text-sub); line-height: 1.6; }
+    .expand-hint {
+      font-size: 13px; color: var(--primary); font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo" onclick="location.href='index.html'" style="cursor:pointer">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" fill="#1a7cdb"/>
+      <path d="M8 18c0-4 2.5-7 6-7s6 3 6 7" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <circle cx="14" cy="9.5" r="2.5" fill="white"/>
+      <path d="M10 22h8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    CJ的漫旅
+  </div>
+  <ul class="nav-links">
+    <li><a href="destinations.html">目的地</a></li>
+    <li><a href="routes.html" style="color:var(--primary)">热门路线</a></li>
+    <li><a href="index.html#ai-planner">AI规划师</a></li>
+    <li><a href="articles.html">游记攻略</a></li>
+    <li><a href="hotels.html">精品酒店</a></li>
+  </ul>
+  <button class="nav-cta" id="navLoginBtn" onclick="openAuth()">登录</button>
+  <div class="nav-user-area" id="navUserArea" style="display:none">
+    <span class="nav-user-email" id="userEmailDisplay"></span>
+    <a href="index.html#ai-planner" class="nav-cta" style="text-decoration:none;display:inline-block">AI 规划</a>
+    <button class="nav-logout" onclick="handleLogout()" title="退出登录">退出</button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <h1>精选旅行路线</h1>
+  <p>精心策划的行程，让每一程都值得期待</p>
+</div>
+
+<div class="content-section">
+  <div class="route-full-card">
+    <div class="route-top" onclick="toggleRoute(this)">
+      <div>
+        <h2>云南大理丽江6日游</h2>
+        <div class="route-meta-row">
+          <span class="meta-badge">6天5晚</span>
+          <span class="meta-badge">最佳季节: 3-5月, 9-11月</span>
+          <span class="meta-badge">难度: 轻松</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="route-days-big">¥3,980起</span>
+        <span class="expand-hint">展开 ▼</span>
+      </div>
+    </div>
+    <div class="route-itinerary">
+      <div class="day-item"><span class="day-num">Day 1</span><span class="day-desc">抵达昆明 → 石林景区 → 晚间火车赴大理</span></div>
+      <div class="day-item"><span class="day-num">Day 2</span><span class="day-desc">大理古城 → 洱海环湖骑行 → 双廊古镇日落</span></div>
+      <div class="day-item"><span class="day-num">Day 3</span><span class="day-desc">崇圣寺三塔 → 苍山索道 → 喜洲古镇体验扎染</span></div>
+      <div class="day-item"><span class="day-num">Day 4</span><span class="day-desc">大理 → 丽江 → 丽江古城漫步，四方街夜市</span></div>
+      <div class="day-item"><span class="day-num">Day 5</span><span class="day-desc">玉龙雪山冰川大索道 → 蓝月谷 → 束河古镇</span></div>
+      <div class="day-item"><span class="day-num">Day 6</span><span class="day-desc">白沙古镇 → 丽江返程，结束难忘之旅</span></div>
+    </div>
+  </div>
+
+  <div class="route-full-card">
+    <div class="route-top" onclick="toggleRoute(this)">
+      <div>
+        <h2>川西环线7日游</h2>
+        <div class="route-meta-row">
+          <span class="meta-badge">7天6晚</span>
+          <span class="meta-badge">最佳季节: 6-10月</span>
+          <span class="meta-badge">难度: 中等</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="route-days-big">¥5,600起</span>
+        <span class="expand-hint">展开 ▼</span>
+      </div>
+    </div>
+    <div class="route-itinerary">
+      <div class="day-item"><span class="day-num">Day 1</span><span class="day-desc">成都出发 → 雅安 → 泸定桥 → 康定情歌城</span></div>
+      <div class="day-item"><span class="day-num">Day 2</span><span class="day-desc">康定 → 折多山垭口 → 新都桥摄影天堂 → 塔公草原</span></div>
+      <div class="day-item"><span class="day-num">Day 3</span><span class="day-desc">塔公 → 墨石公园（异域星球）→ 丹巴藏寨</span></div>
+      <div class="day-item"><span class="day-num">Day 4</span><span class="day-desc">丹巴 → 四姑娘山 → 双桥沟徒步</span></div>
+      <div class="day-item"><span class="day-num">Day 5</span><span class="day-desc">四姑娘山 → 卧龙熊猫基地 → 映秀地震遗址 → 都江堰</span></div>
+      <div class="day-item"><span class="day-num">Day 6</span><span class="day-desc">都江堰水利工程 → 青城山道教文化 → 返回成都</span></div>
+      <div class="day-item"><span class="day-num">Day 7</span><span class="day-desc">成都自由活动（宽窄巷子/锦里/大熊猫基地）→ 返程</span></div>
+    </div>
+  </div>
+
+  <div class="route-full-card">
+    <div class="route-top" onclick="toggleRoute(this)">
+      <div>
+        <h2>日本关西经典5日游</h2>
+        <div class="route-meta-row">
+          <span class="meta-badge">5天4晚</span>
+          <span class="meta-badge">最佳: 3-5月(樱花) / 10-11月(红叶)</span>
+          <span class="meta-badge">难度: 轻松</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="route-days-big">¥8,800起</span>
+        <span class="expand-hint">展开 ▼</span>
+      </div>
+    </div>
+    <div class="route-itinerary">
+      <div class="day-item"><span class="day-num">Day 1</span><span class="day-desc">抵达大阪关西机场 → 道顿堀美食街 → 心斋桥购物</span></div>
+      <div class="day-item"><span class="day-num">Day 2</span><span class="day-desc">大阪城天守阁 → 奈良公园喂小鹿 → 东大寺 → 前往京都</span></div>
+      <div class="day-item"><span class="day-num">Day 3</span><span class="day-desc">伏见稻荷大社千本鸟居 → 清水寺 → 二年坂三年坂 → 祇园花见小路</span></div>
+      <div class="day-item"><span class="day-num">Day 4</span><span class="day-desc">岚山竹林小径 → 天龙寺 → 金阁寺 → 二条城</span></div>
+      <div class="day-item"><span class="day-num">Day 5</span><span class="day-desc">锦市场早餐 → 京都 → 关西机场返程，满载而归</span></div>
+    </div>
+  </div>
+
+  <div class="route-full-card">
+    <div class="route-top" onclick="toggleRoute(this)">
+      <div>
+        <h2>泰国曼谷芭提雅5日游</h2>
+        <div class="route-meta-row">
+          <span class="meta-badge">5天4晚</span>
+          <span class="meta-badge">最佳季节: 11-2月</span>
+          <span class="meta-badge">难度: 轻松</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="route-days-big">¥3,200起</span>
+        <span class="expand-hint">展开 ▼</span>
+      </div>
+    </div>
+    <div class="route-itinerary">
+      <div class="day-item"><span class="day-num">Day 1</span><span class="day-desc">抵达曼谷 → 大皇宫 → 玉佛寺 → 卧佛寺</span></div>
+      <div class="day-item"><span class="day-num">Day 2</span><span class="day-desc">丹嫩沙多水上市场 → 美功铁道市场 → 暹罗广场商圈</span></div>
+      <div class="day-item"><span class="day-num">Day 3</span><span class="day-desc">曼谷 → 芭提雅 → 真理圣殿 → 芭提雅海滩落日</span></div>
+      <div class="day-item"><span class="day-num">Day 4</span><span class="day-desc">珊瑚岛一日游（浮潜/水上项目）→ 蒂芬妮人妖秀</span></div>
+      <div class="day-item"><span class="day-num">Day 5</span><span class="day-desc">四方水上市场 → 返程，带着微笑之国的美好回忆</span></div>
+    </div>
+  </div>
+
+  <div class="route-full-card">
+    <div class="route-top" onclick="toggleRoute(this)">
+      <div>
+        <h2>巴黎+南法9日浪漫之旅</h2>
+        <div class="route-meta-row">
+          <span class="meta-badge">9天8晚</span>
+          <span class="meta-badge">最佳季节: 4-6月, 9-10月</span>
+          <span class="meta-badge">难度: 中等</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="route-days-big">¥22,000起</span>
+        <span class="expand-hint">展开 ▼</span>
+      </div>
+    </div>
+    <div class="route-itinerary">
+      <div class="day-item"><span class="day-num">Day 1</span><span class="day-desc">抵达巴黎 → 塞纳河游船晚餐，夜观埃菲尔铁塔</span></div>
+      <div class="day-item"><span class="day-num">Day 2</span><span class="day-desc">卢浮宫（蒙娜丽莎/维纳斯）→ 杜乐丽花园 → 香榭丽舍大街</span></div>
+      <div class="day-item"><span class="day-num">Day 3</span><span class="day-desc">埃菲尔铁塔登顶 → 蒙马特高地 → 圣心教堂 → 红磨坊区域</span></div>
+      <div class="day-item"><span class="day-num">Day 4</span><span class="day-desc">凡尔赛宫一日游 → 下午火车赴第戎</span></div>
+      <div class="day-item"><span class="day-num">Day 5</span><span class="day-desc">博纳酒庄品酒 → 阿维尼翁 → 教皇宫 → 断桥</span></div>
+      <div class="day-item"><span class="day-num">Day 6</span><span class="day-desc">尼姆古罗马竞技场 → 阿尔勒梵高足迹 → 向日葵田</span></div>
+      <div class="day-item"><span class="day-num">Day 7</span><span class="day-desc">马赛老港 → 卡朗格峡湾徒步 → 品尝马赛鱼汤</span></div>
+      <div class="day-item"><span class="day-num">Day 8</span><span class="day-desc">戛纳影节宫 → 尼斯天使湾 → 摩纳哥蒙特卡洛</span></div>
+      <div class="day-item"><span class="day-num">Day 9</span><span class="day-desc">尼斯老城漫步 → 返程，满载南法阳光</span></div>
+    </div>
+  </div>
+
+  <div class="route-full-card">
+    <div class="route-top" onclick="toggleRoute(this)">
+      <div>
+        <h2>新西兰南北岛12日深度游</h2>
+        <div class="route-meta-row">
+          <span class="meta-badge">12天11晚</span>
+          <span class="meta-badge">最佳季节: 11-3月</span>
+          <span class="meta-badge">难度: 中等</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="route-days-big">¥28,000起</span>
+        <span class="expand-hint">展开 ▼</span>
+      </div>
+    </div>
+    <div class="route-itinerary">
+      <div class="day-item"><span class="day-num">Day 1</span><span class="day-desc">抵达奥克兰 → 天空塔俯瞰全景 → 皇后街漫步</span></div>
+      <div class="day-item"><span class="day-num">Day 2</span><span class="day-desc">霍比特村 → 怀托摩萤火虫洞 → 罗托鲁瓦</span></div>
+      <div class="day-item"><span class="day-num">Day 3</span><span class="day-desc">地热公园 → 毛利文化村 → 波利尼西亚温泉</span></div>
+      <div class="day-item"><span class="day-num">Day 4</span><span class="day-desc">罗托鲁瓦 → 惠灵顿 → 蒂帕帕国家博物馆</span></div>
+      <div class="day-item"><span class="day-num">Day 5</span><span class="day-desc">库克海峡渡轮 → 皮克顿 → 尼尔森</span></div>
+      <div class="day-item"><span class="day-num">Day 6</span><span class="day-desc">亚伯塔斯曼国家公园徒步/皮划艇</span></div>
+      <div class="day-item"><span class="day-num">Day 7</span><span class="day-desc">西海岸 → 弗朗兹约瑟夫冰川直升机徒步</span></div>
+      <div class="day-item"><span class="day-num">Day 8</span><span class="day-desc">瓦纳卡孤独的树 → 箭镇金秋 → 皇后镇</span></div>
+      <div class="day-item"><span class="day-num">Day 9</span><span class="day-desc">米尔福德峡湾游船 → 瀑布与海豚</span></div>
+      <div class="day-item"><span class="day-num">Day 10</span><span class="day-desc">皇后镇自由日（蹦极/喷射快艇/葡萄酒庄）</span></div>
+      <div class="day-item"><span class="day-num">Day 11</span><span class="day-desc">皇后镇 → 蒂卡波湖（星空保护区）→ 好牧人教堂</span></div>
+      <div class="day-item"><span class="day-num">Day 12</span><span class="day-desc">蒂卡波 → 基督城 → 返程，不虚此行</span></div>
+    </div>
+  </div>
+
+  <div class="route-full-card">
+    <div class="route-top" onclick="toggleRoute(this)">
+      <div>
+        <h2>埃及金字塔尼罗河8日探秘</h2>
+        <div class="route-meta-row">
+          <span class="meta-badge">8天7晚</span>
+          <span class="meta-badge">最佳季节: 10-4月</span>
+          <span class="meta-badge">难度: 中等</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="route-days-big">¥12,500起</span>
+        <span class="expand-hint">展开 ▼</span>
+      </div>
+    </div>
+    <div class="route-itinerary">
+      <div class="day-item"><span class="day-num">Day 1</span><span class="day-desc">抵达开罗 → 吉萨金字塔群 → 狮身人面像 → 骑骆驼</span></div>
+      <div class="day-item"><span class="day-num">Day 2</span><span class="day-desc">埃及博物馆 → 老开罗哈利利市场 → 悬空教堂</span></div>
+      <div class="day-item"><span class="day-num">Day 3</span><span class="day-desc">开罗飞卢克索 → 卡尔纳克神庙 → 卢克索神庙灯光秀</span></div>
+      <div class="day-item"><span class="day-num">Day 4</span><span class="day-desc">帝王谷 → 哈特谢普苏特女王神庙 → 门农巨像</span></div>
+      <div class="day-item"><span class="day-num">Day 5</span><span class="day-desc">登上尼罗河游轮 → 埃德福神庙 → 甲板日落</span></div>
+      <div class="day-item"><span class="day-num">Day 6</span><span class="day-desc">科翁波神庙 → 尼罗河航行 → 阿斯旺大坝</span></div>
+      <div class="day-item"><span class="day-num">Day 7</span><span class="day-desc">阿布辛贝神庙（拉美西斯二世）→ 菲莱神庙</span></div>
+      <div class="day-item"><span class="day-num">Day 8</span><span class="day-desc">阿斯旺自由活动 → 返程，穿越千年古埃及</span></div>
+    </div>
+  </div>
+
+  <div class="route-full-card">
+    <div class="route-top" onclick="toggleRoute(this)">
+      <div>
+        <h2>冰岛环岛10日极光之旅</h2>
+        <div class="route-meta-row">
+          <span class="meta-badge">10天9晚</span>
+          <span class="meta-badge">极光季: 9-3月 / 夏季: 6-8月</span>
+          <span class="meta-badge">难度: 较高</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="route-days-big">¥32,000起</span>
+        <span class="expand-hint">展开 ▼</span>
+      </div>
+    </div>
+    <div class="route-itinerary">
+      <div class="day-item"><span class="day-num">Day 1</span><span class="day-desc">抵达雷克雅未克 → 蓝湖温泉，洗去旅途疲惫</span></div>
+      <div class="day-item"><span class="day-num">Day 2</span><span class="day-desc">黄金圈：辛格维利尔国家公园 → 间歇泉 → 黄金瀑布</span></div>
+      <div class="day-item"><span class="day-num">Day 3</span><span class="day-desc">南岸塞里雅兰瀑布 → 斯科加瀑布 → 黑沙滩</span></div>
+      <div class="day-item"><span class="day-num">Day 4</span><span class="day-desc">杰古沙龙冰河湖 → 钻石沙滩 → 冰川徒步</span></div>
+      <div class="day-item"><span class="day-num">Day 5</span><span class="day-desc">东部峡湾穿越 → 峡湾小镇夜宿</span></div>
+      <div class="day-item"><span class="day-num">Day 6</span><span class="day-desc">埃伊尔斯塔济 → 黛提瀑布（欧洲最壮观瀑布）</span></div>
+      <div class="day-item"><span class="day-num">Day 7</span><span class="day-desc">米湖地热区 → 伪火山口 → 米湖温泉</span></div>
+      <div class="day-item"><span class="day-num">Day 8</span><span class="day-desc">众神瀑布 → 阿克雷里 → 赏鲸之旅</span></div>
+      <div class="day-item"><span class="day-num">Day 9</span><span class="day-desc">斯奈山半岛 → 草帽山 → 黑教堂</span></div>
+      <div class="day-item"><span class="day-num">Day 10</span><span class="day-desc">返回雷克雅未克 → 哈帕音乐厅 → 返程，冰与火之歌</span></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h3>CJ的漫旅 · 智能旅游助手</h3>
+      <p>用科技让每一次旅行更美好。</p>
+    </div>
+    <div class="footer-col">
+      <h4>目的地</h4>
+      <ul>
+        <li><a href="destinations.html">国内热门</a></li>
+        <li><a href="destinations.html">亚洲精选</a></li>
+        <li><a href="destinations.html">欧洲之旅</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>服务</h4>
+      <ul>
+        <li><a href="index.html#ai-planner">AI行程规划</a></li>
+        <li><a href="hotels.html">酒店推荐</a></li>
+        <li><a href="articles.html">签证指南</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>关于</h4>
+      <ul>
+        <li><a href="about.html">关于CJ的漫旅</a></li>
+        <li><a href="about.html">帮助中心</a></li>
+        <li><a href="about.html">联系我们</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 CJ的漫旅 · All rights reserved</span>
+    <span>用心呈现世界之美</span>
+  </div>
+</footer>
+
+<script>
+function toggleRoute(el) {
+  const card = el.parentElement;
+  const itin = card.querySelector('.route-itinerary');
+  const hint = card.querySelector('.expand-hint');
+  itin.classList.toggle('open');
+  hint.textContent = itin.classList.contains('open') ? '收起 ▲' : '展开 ▼';
+}
+</script>
+
+<!-- 认证弹窗 -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">登录</button>
+      <button class="auth-tab" data-tab="signup" onclick="switchAuthTab('signup')">注册</button>
+    </div>
+    <div id="authError" class="auth-error"></div>
+
+    <div id="authLogin">
+      <label for="loginEmail">邮箱</label>
+      <input type="email" id="loginEmail" placeholder="your@email.com" />
+      <label for="loginPassword">密码</label>
+      <input type="password" id="loginPassword" placeholder="请输入密码" />
+      <button class="btn-save" style="width:100%;margin-top:16px" onclick="handleLogin()">登录</button>
+    </div>
+
+    <div id="authSignup" style="display:none">
+      <label for="signupEmail">邮箱</label>
+      <input type="email" id="signupEmail" placeholder="your@email.com" />
+      <label for="signupPassword">密码</label>
+      <input type="password" id="signupPassword" placeholder="至少6位密码" />
+      <button class="btn-save" style="width:100%;margin-top:16px" onclick="handleSignup()">注册</button>
+    </div>
+
+    <div class="modal-actions" style="margin-top:12px;justify-content:center">
+      <button class="btn-cancel" onclick="closeAuth()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="auth.js"></script>
+</body>
+</html>
