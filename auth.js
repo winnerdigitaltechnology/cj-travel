@@ -168,3 +168,27 @@ if (document.readyState === 'loading') {
 } else {
   initAuth();
 }
+
+// ===== 移动端菜单 =====
+function toggleMobileMenu() {
+  var menu = document.getElementById('mobileMenu');
+  var btn = document.querySelector('.nav-hamburger');
+  var isOpen = menu && menu.classList.contains('show');
+  if (isOpen) {
+    menu.classList.remove('show');
+    if (btn) btn.classList.remove('open');
+    document.body.style.overflow = '';
+  } else {
+    if (menu) menu.classList.add('show');
+    if (btn) btn.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeMobileMenu() {
+  var menu = document.getElementById('mobileMenu');
+  var btn = document.querySelector('.nav-hamburger');
+  if (menu) menu.classList.remove('show');
+  if (btn) btn.classList.remove('open');
+  document.body.style.overflow = '';
+}
