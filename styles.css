@@ -57,6 +57,36 @@
     }
     .nav-cta:hover { background: var(--primary-dark); }
 
+    /* ===== MOBILE NAV (Hamburger) ===== */
+    .nav-hamburger {
+      display: none; background: none; border: none; cursor: pointer;
+      padding: 8px 4px; z-index: 110; width: 32px; height: 32px;
+      align-items: center; justify-content: center;
+    }
+    .nav-hamburger span {
+      display: block; width: 20px; height: 2px;
+      background: var(--text); margin: 4px 0;
+      transition: all .3s ease; border-radius: 2px;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(4px,4px); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(4px,-4px); }
+    .nav-mobile-menu {
+      display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.98); backdrop-filter: blur(12px);
+      z-index: 99; padding: 16px 20px; flex-direction: column; gap: 6px;
+      overflow-y: auto; -webkit-overflow-scrolling: touch;
+    }
+    .nav-mobile-menu.show { display: flex; }
+    .nav-mobile-menu a {
+      display: block; font-size: 17px; font-weight: 500; color: var(--text);
+      text-decoration: none; padding: 15px 16px;
+      border-radius: 12px; background: var(--bg);
+      transition: background .15s;
+    }
+    .nav-mobile-menu a:hover { background: var(--primary-light); color: var(--primary); }
+    .nav-mobile-menu a.active { color: var(--primary); font-weight: 600; }
+
     /* ===== HERO ===== */
     .hero {
       background: linear-gradient(135deg, #0a3d7a 0%, #185fa5 40%, #2577c8 70%, #1d9e75 100%);
@@ -588,11 +618,14 @@
     }
 
     /* ===== RESPONSIVE ===== */
+    /* Tablet (≤860px) */
     @media (max-width: 860px) {
-      nav { padding: 0 20px; }
-      .nav-links { display: none; }
+      nav { padding: 0 16px; }
+      .nav-links, .nav-cta, #navLoginBtn { display: none; }
+      .nav-hamburger { display: flex; flex-direction: column; }
       .hero { padding: 60px 20px 80px; }
-      .hero-stats { gap: 20px; }
+      .hero-stats { gap: 16px; }
+      .hero-stats .stat-num { font-size: 22px; }
       section { padding: 48px 20px; }
       .ai-section { padding: 48px 20px; }
       .ai-layout { grid-template-columns: 1fr; gap: 28px; }
@@ -600,10 +633,111 @@
       .pick-card:first-child { grid-row: auto; grid-column: 1 / 3; height: 200px; }
       .footer-grid { grid-template-columns: 1fr 1fr; }
       .cta-section { padding: 48px 20px; }
+      /* Routes page */
+      .route-top { flex-direction: column; }
+      .day-item { flex-direction: column; gap: 8px; }
+      .day-num { align-self: flex-start; }
+      /* Hotels page */
+      .filter-bar { gap: 10px; }
+      .hotel-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+      /* Tabs */
+      .tabs { overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; }
+      .tab { white-space: nowrap; flex-shrink: 0; }
     }
+
+    /* Phone (≤540px) */
     @media (max-width: 540px) {
+      /* Nav */
+      nav { height: 56px; }
+      .nav-logo { font-size: 17px; }
+      .nav-logo svg { width: 24px; height: 24px; }
+      .nav-mobile-menu { top: 56px; }
+
+      /* Hero */
+      .hero { padding: 40px 16px 56px; }
+      .hero h1 { font-size: 22px; }
+      .hero p { font-size: 14px; max-width: none; }
+      .hero-tag { font-size: 12px; padding: 4px 12px; }
+      .search-bar { flex-direction: column; padding: 12px; border-radius: 20px; gap: 10px; }
+      .search-bar input { width: 100%; padding: 8px 0; font-size: 14px; }
+      .search-btn { width: 100%; text-align: center; padding: 12px; }
+      .hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 32px; }
+      .hero-stats .stat-num { font-size: 20px; }
+      .hero-stats .stat-label { font-size: 11px; }
+
+      /* Sections */
+      section { padding: 36px 16px; }
+      .ai-section { padding: 36px 16px; }
+      .section-title { font-size: 20px; }
+      .section-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+
+      /* Destinations page */
+      .page-hero { padding: 32px 16px; }
+      .page-hero h1 { font-size: 22px; }
+      .page-hero p { font-size: 14px; }
+      .content-section { padding: 24px 16px; }
+      .dest-full-grid { grid-template-columns: 1fr; }
+      .card-img, .hotel-img { height: 180px; }
+
+      /* Cards */
       .dest-grid { grid-template-columns: 1fr; }
-      .picks-grid { grid-template-columns: 1fr; }
-      .pick-card:first-child { grid-column: auto; }
-      .footer-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .reviews-grid { grid-template-columns: 1fr; }
+      .hotel-grid { grid-template-columns: 1fr; }
+
+      /* Filter bar */
+      .filter-bar { flex-direction: column; align-items: stretch; }
+      .filter-bar select { width: 100%; }
+
+      /* Routes */
+      .route-full-card .route-top { padding: 18px; }
+      .route-full-card .route-top h2 { font-size: 17px; }
+      .route-meta-row { gap: 8px; }
+      .meta-badge { font-size: 12px; padding: 3px 10px; }
+      .route-itinerary { padding: 0 12px 16px; }
+
+      /* About page */
+      .about-hero { padding: 32px 16px; }
+      .about-hero h1 { font-size: 22px; }
+      .about-content { padding: 28px 16px; }
+
+      /* Reviews page */
+      .review-card { padding: 16px; }
+
+      /* Articles page */
+      .article-cover { height: 160px; }
+
+      /* Picks grid */
+      .picks-grid { grid-template-columns: 1fr; gap: 10px; }
+      .pick-card:first-child { grid-column: auto; height: 180px; }
+      .pick-card:not(:first-child) { height: 150px; }
+
+      /* AI / Chat */
+      .ai-intro h2 { font-size: 22px; }
+      .chat-messages { height: 240px; padding: 14px; }
+      .chat-suggestions { padding: 0 12px 10px; gap: 6px; }
+      .suggestion-chip { font-size: 11px; padding: 5px 10px; }
+      .chat-input-row { padding: 10px 12px; }
+      .chat-input { font-size: 14px; }
+      .msg { max-width: 90%; }
+      .msg-bubble { font-size: 13px; padding: 8px 12px; }
+
+      /* CTA */
+      .cta-section { padding: 40px 16px; }
+      .cta-section h2 { font-size: 22px; }
+      .cta-section p { font-size: 14px; }
+      .cta-buttons { flex-direction: column; align-items: stretch; }
+      .btn-white, .btn-outline { width: 100%; text-align: center; }
+
+      /* Footer */
+      .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+      .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+      footer { padding: 36px 16px 24px; }
+
+      /* Modal */
+      .modal-box { width: 94%; padding: 20px; }
+
+      /* Route items (index) */
+      .route-item { padding: 12px 16px; gap: 12px; flex-wrap: wrap; }
+      .route-meta { text-align: left; }
     }
