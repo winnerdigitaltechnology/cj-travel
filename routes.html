@@ -72,6 +72,9 @@
     <li><a href="articles.html">游记攻略</a></li>
     <li><a href="hotels.html">精品酒店</a></li>
   </ul>
+  <button class="nav-hamburger" onclick="toggleMobileMenu()" aria-label="菜单">
+    <span></span><span></span><span></span>
+  </button>
   <button class="nav-cta" id="navLoginBtn" onclick="openAuth()">登录</button>
   <div class="nav-user-area" id="navUserArea" style="display:none">
     <span class="nav-user-email" id="userEmailDisplay"></span>
@@ -79,6 +82,18 @@
     <button class="nav-logout" onclick="handleLogout()" title="退出登录">退出</button>
   </div>
 </nav>
+
+<!-- MOBILE MENU -->
+<div class="nav-mobile-menu" id="mobileMenu">
+  <a href="index.html">首页</a>
+  <a href="destinations.html">目的地</a>
+  <a href="routes.html" class="active">热门路线</a>
+  <a href="index.html#ai-planner" onclick="closeMobileMenu()">AI规划师</a>
+  <a href="articles.html">游记攻略</a>
+  <a href="hotels.html">精品酒店</a>
+  <a href="reviews.html">用户评价</a>
+  <a href="about.html">关于我们</a>
+</div>
 
 <div class="page-hero">
   <h1>精选旅行路线</h1>
