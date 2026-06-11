@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理后台 · CJ的漫旅</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #1a7cdb;
+      --primary-dark: #0c4f8a;
+      --primary-light: #e8f3fd;
+      --accent: #f4890a;
+      --green: #1d9e75;
+      --red: #e74c3c;
+      --bg: #f0f4f8;
+      --card: #ffffff;
+      --sidebar: #1a1a2e;
+      --sidebar-text: rgba(255,255,255,0.75);
+      --sidebar-active: rgba(255,255,255,0.12);
+      --text: #1a1a2e;
+      --text-sub: #5a5a72;
+      --border: rgba(0,0,0,0.08);
+      --shadow: 0 2px 16px rgba(0,0,0,0.07);
+      --radius: 14px;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ===== LOGIN PAGE ===== */
+    #loginPage {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    }
+    .login-box {
+      background: white; border-radius: 20px;
+      padding: 44px 40px; width: 380px; max-width: 94vw;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .login-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 20px; font-weight: 700; color: var(--primary);
+      margin-bottom: 8px; justify-content: center;
+    }
+    .login-logo svg { width: 28px; height: 28px; }
+    .login-subtitle {
+      text-align: center; color: var(--text-sub);
+      font-size: 13px; margin-bottom: 30px;
+    }
+    .login-badge {
+      display: inline-block; background: #fff3cd; color: #856404;
+      border: 1px solid #ffc107; border-radius: 20px;
+      font-size: 11px; padding: 3px 12px; margin-bottom: 24px;
+      font-weight: 500; text-align: center; width: 100%;
+    }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block; font-size: 13px; font-weight: 500;
+      color: var(--text-sub); margin-bottom: 6px;
+    }
+    .form-group input {
+      width: 100%; padding: 12px 14px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 14px; color: var(--text);
+      transition: border-color .2s; outline: none;
+    }
+    .form-group input:focus { border-color: var(--primary); }
+    .login-btn {
+      width: 100%; padding: 13px;
+      background: var(--primary); color: white;
+      border: none; border-radius: 10px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      transition: background .2s; margin-top: 8px;
+    }
+    .login-btn:hover { background: var(--primary-dark); }
+    .login-error {
+      color: var(--red); font-size: 13px;
+      text-align: center; margin-top: 10px; min-height: 20px;
+    }
+
+    /* ===== ADMIN LAYOUT ===== */
+    #adminPage { display: none; min-height: 100vh; flex-direction: column; }
+    .admin-layout { display: flex; flex: 1; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px; background: var(--sidebar);
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; bottom: 0;
+      z-index: 50; overflow-y: auto;
+    }
+    .sidebar-logo {
+      display: flex; align-items: center; gap: 10px;
+      padding: 22px 20px 20px; color: white;
+      font-size: 16px; font-weight: 700;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .sidebar-logo svg { width: 24px; height: 24px; opacity: 0.9; }
+    .sidebar-badge {
+      font-size: 10px; background: var(--accent);
+      color: white; border-radius: 4px;
+      padding: 2px 6px; margin-left: auto; font-weight: 600;
+    }
+    .sidebar-section {
+      padding: 16px 12px 4px;
+      font-size: 10px; font-weight: 700; letter-spacing: 1px;
+      color: rgba(255,255,255,0.35); text-transform: uppercase;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 11px;
+      padding: 10px 16px; border-radius: 10px;
+      color: var(--sidebar-text);
+      cursor: pointer; transition: all .15s;
+      font-size: 14px; margin: 1px 8px;
+      text-decoration: none;
+    }
+    .sidebar-item:hover { background: var(--sidebar-active); color: white; }
+    .sidebar-item.active { background: var(--primary); color: white; }
+    .sidebar-item svg { width: 16px; height: 16px; opacity: 0.8; flex-shrink: 0; }
+    .sidebar-item.active svg { opacity: 1; }
+    .sidebar-bottom {
+      margin-top: auto;
+      padding: 16px 8px 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .sidebar-user {
+      padding: 10px 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sidebar-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--primary); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; flex-shrink: 0;
+    }
+    .sidebar-user-info { flex: 1; min-width: 0; }
+    .sidebar-user-email {
+      font-size: 11px; color: rgba(255,255,255,0.55);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .sidebar-user-role {
+      font-size: 10px; color: var(--accent); font-weight: 600;
+    }
+    .logout-btn {
+      width: 100%; padding: 9px 16px;
+      background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6);
+      border: none; border-radius: 8px; cursor: pointer;
+      font-size: 13px; transition: all .15s; text-align: left;
+      display: flex; align-items: center; gap: 8px; margin: 0 8px;
+      width: calc(100% - 16px);
+    }
+    .logout-btn:hover { background: rgba(231,76,60,0.2); color: #ff6b6b; }
+
+    /* Main */
+    .admin-main {
+      margin-left: 240px; flex: 1;
+      display: flex; flex-direction: column; min-height: 100vh;
+    }
+    .admin-topbar {
+      background: white; padding: 0 28px;
+      height: 60px; display: flex; align-items: center;
+      border-bottom: 1px solid var(--border);
+      justify-content: space-between;
+      position: sticky; top: 0; z-index: 40;
+    }
+    .topbar-title {
+      font-size: 18px; font-weight: 700;
+    }
+    .topbar-right {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .topbar-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 8px;
+      background: var(--primary-light); color: var(--primary);
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      border: none; text-decoration: none; transition: all .15s;
+    }
+    .topbar-btn:hover { background: var(--primary); color: white; }
+    .topbar-btn svg { width: 14px; height: 14px; }
+    .admin-content { padding: 24px 28px; }
+
+    /* ===== STAT CARDS ===== */
+    .stat-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: white; border-radius: var(--radius);
+      padding: 20px; box-shadow: var(--shadow);
+      display: flex; align-items: center; gap: 16px;
+    }
+    .stat-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+    }
+    .stat-icon.blue { background: var(--primary-light); }
+    .stat-icon.green { background: #e1f5ee; }
+    .stat-icon.orange { background: #fef3e2; }
+    .stat-icon.purple { background: #f3e8fd; }
+    .stat-num { font-size: 26px; font-weight: 800; color: var(--text); }
+    .stat-label { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+
+    /* ===== PANELS ===== */
+    .panel {
+      background: white; border-radius: var(--radius);
+      box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden;
+    }
+    .panel-head {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .panel-title { font-size: 15px; font-weight: 700; }
+    .panel-body { padding: 0; }
+
+    /* ===== TABLE ===== */
+    .data-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .data-table th {
+      background: var(--bg); text-align: left;
+      padding: 11px 16px; font-weight: 600; color: var(--text-sub);
+      font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table td {
+      padding: 12px 16px; border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: #fafbfc; }
+    .table-img {
+      width: 52px; height: 36px; border-radius: 6px;
+      object-fit: cover; background: var(--bg);
+      overflow: hidden;
+    }
+    .table-img-bg {
+      width: 52px; height: 36px; border-radius: 6px;
+      background-size: cover; background-position: center;
+      background-color: var(--bg); display: inline-block;
+    }
+
+    /* Tags / Badges */
+    .badge {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 20px; font-size: 11px; font-weight: 600;
+    }
+    .badge-blue { background: var(--primary-light); color: var(--primary); }
+    .badge-green { background: #e1f5ee; color: var(--green); }
+    .badge-orange { background: #fef3e2; color: var(--accent); }
+    .badge-red { background: #fde8e6; color: var(--red); }
+    .badge-gray { background: #f0f0f2; color: #888; }
+
+    /* Action buttons */
+    .act-btn {
+      padding: 5px 11px; border-radius: 6px; border: none;
+      cursor: pointer; font-size: 12px; font-weight: 500;
+      transition: all .15s; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .act-edit { background: var(--primary-light); color: var(--primary); }
+    .act-edit:hover { background: var(--primary); color: white; }
+    .act-del { background: #fde8e6; color: var(--red); }
+    .act-del:hover { background: var(--red); color: white; }
+    .act-view { background: #e1f5ee; color: var(--green); }
+    .act-view:hover { background: var(--green); color: white; }
+
+    /* ===== ADD BUTTON ===== */
+    .add-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: 8px;
+      background: var(--primary); color: white;
+      border: none; cursor: pointer; font-size: 13px; font-weight: 600;
+      transition: background .15s;
+    }
+    .add-btn:hover { background: var(--primary-dark); }
+    .add-btn svg { width: 14px; height: 14px; }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 200;
+      display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: white; border-radius: 18px;
+      width: 520px; max-width: 100%;
+      max-height: 90vh; overflow-y: auto;
+      padding: 28px 28px 24px;
+    }
+    .modal-title {
+      font-size: 17px; font-weight: 700; margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-close {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--bg); border: none; cursor: pointer;
+      font-size: 16px; display: flex; align-items: center; justify-content: center;
+      color: var(--text-sub);
+    }
+    .modal-close:hover { background: #e0e0e0; }
+    .modal-form .form-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    }
+    .modal-form .form-group { margin-bottom: 14px; }
+    .modal-form .form-group.full { grid-column: 1 / -1; }
+    .modal-form label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--text-sub); margin-bottom: 5px;
+    }
+    .modal-form input, .modal-form select, .modal-form textarea {
+      width: 100%; padding: 10px 12px;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 14px; color: var(--text); outline: none;
+      transition: border-color .2s; font-family: inherit;
+    }
+    .modal-form input:focus, .modal-form select:focus, .modal-form textarea:focus {
+      border-color: var(--primary);
+    }
+    .modal-form textarea { resize: vertical; min-height: 80px; }
+    .modal-actions {
+      display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;
+    }
+    .btn-cancel {
+      padding: 10px 20px; border-radius: 8px;
+      background: var(--bg); color: var(--text-sub);
+      border: none; cursor: pointer; font-size: 14px; font-weight: 500;
+    }
+    .btn-cancel:hover { background: #e0e0e0; }
+    .btn-save {
+      padding: 10px 24px; border-radius: 8px;
+      background: var(--primary); color: white;
+      border: none; cursor: pointer; font-size: 14px; font-weight: 600;
+      transition: background .15s;
+    }
+    .btn-save:hover { background: var(--primary-dark); }
+
+    /* ===== SEARCH BAR ===== */
+    .table-toolbar {
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .table-search {
+      flex: 1; padding: 8px 14px;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 13px; outline: none; transition: border-color .2s;
+    }
+    .table-search:focus { border-color: var(--primary); }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center; padding: 60px 20px; color: var(--text-sub);
+    }
+    .empty-state svg { width: 48px; height: 48px; opacity: 0.3; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    /* ===== NOTIFICATION ===== */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: #1a1a2e; color: white;
+      padding: 12px 20px; border-radius: 10px;
+      font-size: 14px; z-index: 999; opacity: 0;
+      transform: translateY(10px); transition: all .3s;
+      max-width: 320px;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: var(--green); }
+    .toast.error { background: var(--red); }
+
+    /* ===== RECENT ACTIVITY (dashboard) ===== */
+    .activity-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 20px; border-bottom: 1px solid var(--border);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .activity-text { font-size: 13px; flex: 1; }
+    .activity-time { font-size: 12px; color: var(--text-sub); }
+
+    /* ===== QUICK STATS (charts placeholder) ===== */
+    .mini-chart {
+      background: var(--primary-light); border-radius: 8px;
+      height: 60px; display: flex; align-items: flex-end;
+      gap: 4px; padding: 8px;
+    }
+    .mini-bar {
+      flex: 1; background: var(--primary);
+      border-radius: 3px 3px 0 0; opacity: 0.7;
+    }
+
+    /* ===== PAGE SECTIONS (hidden by default) ===== */
+    .admin-section { display: none; }
+    .admin-section.active { display: block; }
+
+    /* ===== CONFIRMATION DIALOG ===== */
+    .confirm-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 300;
+      display: none; align-items: center; justify-content: center;
+    }
+    .confirm-overlay.show { display: flex; }
+    .confirm-box {
+      background: white; border-radius: 16px;
+      padding: 28px 28px 22px; width: 360px; max-width: 94vw;
+      text-align: center;
+    }
+    .confirm-icon { font-size: 42px; margin-bottom: 12px; }
+    .confirm-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .confirm-msg { font-size: 14px; color: var(--text-sub); margin-bottom: 22px; }
+    .confirm-btns { display: flex; gap: 10px; justify-content: center; }
+    .confirm-cancel {
+      padding: 10px 24px; border-radius: 8px;
+      background: var(--bg); color: var(--text-sub);
+      border: none; cursor: pointer; font-size: 14px; font-weight: 500;
+    }
+    .confirm-ok {
+      padding: 10px 24px; border-radius: 8px;
+      background: var(--red); color: white;
+      border: none; cursor: pointer; font-size: 14px; font-weight: 600;
+    }
+
+    /* ===== MOBILE SIDEBAR TOGGLE ===== */
+    .sidebar-toggle {
+      display: none; background: none; border: none;
+      color: var(--text); cursor: pointer; padding: 4px;
+    }
+    .sidebar-toggle svg { width: 22px; height: 22px; }
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4); z-index: 49;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 860px) {
+      .sidebar { transform: translateX(-100%); transition: transform .3s; }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .sidebar-toggle { display: flex; }
+      .sidebar-overlay.show { display: block; }
+      .admin-main { margin-left: 0; }
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+      .admin-content { padding: 16px; }
+      .admin-topbar { padding: 0 16px; }
+    }
+    @media (max-width: 540px) {
+      .stat-grid { grid-template-columns: 1fr; }
+      .modal-form .form-row { grid-template-columns: 1fr; }
+      .data-table .hide-mobile { display: none; }
+    }
+
+    /* Loading spinner */
+    .spinner {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2.5px solid var(--border);
+      border-top-color: var(--primary);
+      animation: spin .7s linear infinite;
+      display: inline-block; margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="loginPage">
+  <div class="login-box">
+    <div class="login-logo">
+      <svg viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="14" fill="#1a7cdb" opacity="0.15"/>
+        <path d="M8 20 Q12 8 16 14 Q20 20 24 10" stroke="#1a7cdb" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <circle cx="16" cy="14" r="3" fill="#1a7cdb"/>
+      </svg>
+      CJ的漫旅
+    </div>
+    <div class="login-subtitle">管理员后台</div>
+    <div class="login-badge">⚠️ 仅限授权管理员访问</div>
+    <div class="form-group">
+      <label>管理员邮箱</label>
+      <input type="email" id="adminEmail" placeholder="admin@example.com" autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label>密码</label>
+      <input type="password" id="adminPwd" placeholder="••••••••" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')doAdminLogin()">
+    </div>
+    <button class="login-btn" onclick="doAdminLogin()" id="loginBtn">登录管理后台</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ===== ADMIN PAGE ===== -->
+<div id="adminPage">
+  <div class="admin-layout">
+
+    <!-- Sidebar overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <svg viewBox="0 0 32 32" fill="none" width="24" height="24">
+          <circle cx="16" cy="16" r="14" fill="white" opacity="0.15"/>
+          <path d="M8 20 Q12 8 16 14 Q20 20 24 10" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+          <circle cx="16" cy="14" r="3" fill="white"/>
+        </svg>
+        CJ的漫旅
+        <span class="sidebar-badge">ADMIN</span>
+      </div>
+
+      <div style="padding: 12px 0;">
+        <div class="sidebar-section">主菜单</div>
+        <a class="sidebar-item active" data-section="dashboard" onclick="showSection('dashboard')">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 10 Q10 2 18 10 Q10 18 2 10z" opacity="0.3"/><rect x="3" y="10" width="6" height="7" rx="1"/><rect x="11" y="7" width="6" height="10" rx="1"/></svg>
+          控制台
+        </a>
+        <div class="sidebar-section">内容管理</div>
+        <a class="sidebar-item" data-section="destinations" onclick="showSection('destinations')">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2C6.69 2 4 4.69 4 8c0 5.25 6 10 6 10s6-4.75 6-10c0-3.31-2.69-6-6-6zm0 8.5A2.5 2.5 0 1 1 10 5.5a2.5 2.5 0 0 1 0 5z"/></svg>
+          目的地
+        </a>
+        <a class="sidebar-item" data-section="articles" onclick="showSection('articles')">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M4 4h12v2H4V4zm0 4h12v2H4V8zm0 4h8v2H4v-2z"/></svg>
+          游记攻略
+        </a>
+        <a class="sidebar-item" data-section="hotels" onclick="showSection('hotels')">
+          <svg viewBox="0 0 20 20" fill="currentColor"><rect x="2" y="8" width="16" height="10" rx="1"/><path d="M2 8 L10 2 L18 8"/><rect x="8" y="12" width="4" height="6"/></svg>
+          精品酒店
+        </a>
+        <div class="sidebar-section">用户</div>
+        <a class="sidebar-item" data-section="users" onclick="showSection('users')">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="7" r="4"/><path d="M2 18c0-4 3.58-7 8-7s8 3 8 7"/></svg>
+          用户管理
+        </a>
+        <div class="sidebar-section">设置</div>
+        <a class="sidebar-item" data-section="settings" onclick="showSection('settings')">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4zm6.32-2.81a6.5 6.5 0 01.18 2.62l1.67 1.3a.4.4 0 01.1.5l-1.59 2.74a.4.4 0 01-.49.17l-1.97-.79a6.53 6.53 0 01-2.26 1.3l-.3 2.1a.4.4 0 01-.4.33H7.78a.4.4 0 01-.4-.33l-.3-2.1a6.53 6.53 0 01-2.26-1.3l-1.97.79a.4.4 0 01-.49-.17L.77 13.61a.4.4 0 01.1-.5l1.67-1.3A6.5 6.5 0 012.36 9.2l-1.67-1.3a.4.4 0 01-.1-.5L2.18 4.66a.4.4 0 01.49-.17l1.97.79A6.53 6.53 0 016.9 4l.3-2.1A.4.4 0 017.6 1.6h3.8a.4.4 0 01.4.33l.3 2.1a6.53 6.53 0 012.26 1.3l1.97-.79a.4.4 0 01.49.17l1.59 2.74a.4.4 0 01-.1.5l-1.99 1.55z"/></svg>
+          网站设置
+        </a>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-user">
+          <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+          <div class="sidebar-user-info">
+            <div class="sidebar-user-email" id="sidebarEmail">-</div>
+            <div class="sidebar-user-role">超级管理员</div>
+          </div>
+        </div>
+        <button class="logout-btn" onclick="doAdminLogout()">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14"><path d="M3 3h8v2H5v10h6v2H3V3zm11.3 3.7L17.6 10l-3.3 3.3-1.4-1.4L14.2 11H8V9h6.2l-1.3-1.3 1.4-1z"/></svg>
+          退出登录
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+      <div class="admin-topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button class="sidebar-toggle" onclick="toggleSidebar()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="topbar-title" id="topbarTitle">控制台</div>
+        </div>
+        <div class="topbar-right">
+          <a href="index.html" target="_blank" class="topbar-btn">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/><path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/></svg>
+            查看前台
+          </a>
+        </div>
+      </div>
+
+      <div class="admin-content">
+
+        <!-- === DASHBOARD === -->
+        <div class="admin-section active" id="sec-dashboard">
+          <div class="stat-grid" id="statGrid">
+            <div class="stat-card">
+              <div class="stat-icon blue">🗺️</div>
+              <div><div class="stat-num" id="statDest">25</div><div class="stat-label">目的地</div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">📝</div>
+              <div><div class="stat-num" id="statArt">5</div><div class="stat-label">游记攻略</div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon orange">🏨</div>
+              <div><div class="stat-num" id="statHotel">12</div><div class="stat-label">精品酒店</div></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple">👤</div>
+              <div><div class="stat-num" id="statUsers">-</div><div class="stat-label">注册用户</div></div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title">近期动态</div>
+              </div>
+              <div class="panel-body" id="activityList">
+                <div class="activity-item">
+                  <div class="activity-dot" style="background:var(--green)"></div>
+                  <div class="activity-text">网站移动端优化完成</div>
+                  <div class="activity-time">刚刚</div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot" style="background:var(--primary)"></div>
+                  <div class="activity-text">攻略封面图全部替换为实景图</div>
+                  <div class="activity-time">今日</div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot" style="background:var(--accent)"></div>
+                  <div class="activity-text">团队信息更新：溪溪/Workbuddy/Deepseek</div>
+                  <div class="activity-time">今日</div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot" style="background:var(--green)"></div>
+                  <div class="activity-text">目的地图片替换为城市地标高清图</div>
+                  <div class="activity-time">今日</div>
+                </div>
+                <div class="activity-item">
+                  <div class="activity-dot" style="background:var(--primary)"></div>
+                  <div class="activity-text">网站正式上线 GitHub Pages</div>
+                  <div class="activity-time">2026-06-01</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title">快捷操作</div>
+              </div>
+              <div style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <button class="add-btn" onclick="showSection('destinations')" style="justify-content:center">
+                  <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14"><path d="M10 2C6.69 2 4 4.69 4 8c0 5.25 6 10 6 10s6-4.75 6-10c0-3.31-2.69-6-6-6zm0 8.5A2.5 2.5 0 1 1 10 5.5a2.5 2.5 0 0 1 0 5z"/></svg>
+                  管理目的地
+                </button>
+                <button class="add-btn" onclick="showSection('articles')" style="justify-content:center;background:var(--green)">
+                  <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14"><path d="M4 4h12v2H4V4zm0 4h12v2H4V8zm0 4h8v2H4v-2z"/></svg>
+                  管理攻略
+                </button>
+                <button class="add-btn" onclick="showSection('hotels')" style="justify-content:center;background:var(--accent)">
+                  🏨 管理酒店
+                </button>
+                <button class="add-btn" onclick="showSection('users')" style="justify-content:center;background:#7c3aed">
+                  👤 管理用户
+                </button>
+              </div>
+              <div style="padding:0 16px 16px">
+                <div style="background:var(--primary-light);border-radius:10px;padding:14px">
+                  <div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:4px">💡 提示</div>
+                  <div style="font-size:12px;color:var(--text-sub);line-height:1.6">
+                    当前为静态展示数据。连接 Supabase 后，数据将从数据库实时读取。如需创建数据库表，请前往设置页面查看 SQL 语句。
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- === DESTINATIONS === -->
+        <div class="admin-section" id="sec-destinations">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">目的地管理</div>
+              <button class="add-btn" onclick="openDestModal()">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 4a1 1 0 011 1v4h4a1 1 0 110 2h-4v4a1 1 0 11-2 0v-4H5a1 1 0 110-2h4V5a1 1 0 011-1z"/></svg>
+                添加目的地
+              </button>
+            </div>
+            <div class="table-toolbar">
+              <input class="table-search" placeholder="搜索目的地..." oninput="filterTable('destTable', this.value)">
+            </div>
+            <div style="overflow-x:auto">
+              <table class="data-table" id="destTable">
+                <thead>
+                  <tr>
+                    <th>目的地</th>
+                    <th class="hide-mobile">分类</th>
+                    <th class="hide-mobile">标签</th>
+                    <th class="hide-mobile">评分</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="destTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- === ARTICLES === -->
+        <div class="admin-section" id="sec-articles">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">游记攻略管理</div>
+              <button class="add-btn" onclick="openArticleModal()">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 4a1 1 0 011 1v4h4a1 1 0 110 2h-4v4a1 1 0 11-2 0v-4H5a1 1 0 110-2h4V5a1 1 0 011-1z"/></svg>
+                写新攻略
+              </button>
+            </div>
+            <div class="table-toolbar">
+              <input class="table-search" placeholder="搜索攻略..." oninput="filterTable('artTable', this.value)">
+            </div>
+            <div style="overflow-x:auto">
+              <table class="data-table" id="artTable">
+                <thead>
+                  <tr>
+                    <th>标题</th>
+                    <th class="hide-mobile">作者</th>
+                    <th class="hide-mobile">标签</th>
+                    <th class="hide-mobile">阅读量</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="artTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- === HOTELS === -->
+        <div class="admin-section" id="sec-hotels">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">精品酒店管理</div>
+              <button class="add-btn" onclick="openHotelModal()">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 4a1 1 0 011 1v4h4a1 1 0 110 2h-4v4a1 1 0 11-2 0v-4H5a1 1 0 110-2h4V5a1 1 0 011-1z"/></svg>
+                添加酒店
+              </button>
+            </div>
+            <div class="table-toolbar">
+              <input class="table-search" placeholder="搜索酒店..." oninput="filterTable('hotelTable', this.value)">
+            </div>
+            <div style="overflow-x:auto">
+              <table class="data-table" id="hotelTable">
+                <thead>
+                  <tr>
+                    <th>酒店</th>
+                    <th class="hide-mobile">城市</th>
+                    <th class="hide-mobile">星级</th>
+                    <th class="hide-mobile">价格</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="hotelTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- === USERS === -->
+        <div class="admin-section" id="sec-users">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">用户管理</div>
+              <div style="font-size:12px;color:var(--text-sub)">来自 Supabase Auth</div>
+            </div>
+            <div class="table-toolbar">
+              <input class="table-search" placeholder="搜索用户..." oninput="filterTable('userTable', this.value)">
+            </div>
+            <div style="overflow-x:auto">
+              <table class="data-table" id="userTable">
+                <thead>
+                  <tr>
+                    <th>邮箱</th>
+                    <th class="hide-mobile">注册时间</th>
+                    <th class="hide-mobile">最近登录</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="userTableBody">
+                  <tr>
+                    <td colspan="5">
+                      <div class="empty-state">
+                        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><circle cx="24" cy="18" r="10"/><path d="M8 42c0-8.84 7.16-16 16-16s16 7.16 16 16"/></svg>
+                        <p>需要管理员权限才能查看用户列表</p>
+                        <p style="margin-top:6px;font-size:12px">通过 Supabase Dashboard → Authentication 查看所有用户</p>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- === SETTINGS === -->
+        <div class="admin-section" id="sec-settings">
+          <div class="panel" style="margin-bottom:20px">
+            <div class="panel-head">
+              <div class="panel-title">基本设置</div>
+            </div>
+            <div style="padding:20px">
+              <div class="modal-form">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>网站名称</label>
+                    <input type="text" value="CJ的漫旅">
+                  </div>
+                  <div class="form-group">
+                    <label>联系邮箱</label>
+                    <input type="email" value="351688008@qq.com">
+                  </div>
+                  <div class="form-group">
+                    <label>客服电话</label>
+                    <input type="text" value="18738170180">
+                  </div>
+                  <div class="form-group">
+                    <label>办公地址</label>
+                    <input type="text" value="河南省郑州市郑东校区龙子湖智慧岛">
+                  </div>
+                </div>
+                <div style="text-align:right">
+                  <button class="btn-save" onclick="showToast('设置已保存（演示模式）','success')">保存设置</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title">Supabase 数据库 · 建表 SQL</div>
+            </div>
+            <div style="padding:20px">
+              <p style="font-size:13px;color:var(--text-sub);margin-bottom:12px">
+                将以下 SQL 粘贴到 Supabase SQL Editor 执行，即可在数据库中创建管理所需的表：
+              </p>
+              <pre style="background:#1a1a2e;color:#a8d9a7;padding:16px;border-radius:10px;font-size:12px;overflow-x:auto;line-height:1.7">-- 管理员白名单表
+CREATE TABLE IF NOT EXISTS admin_users (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  email text UNIQUE NOT NULL,
+  created_at timestamptz DEFAULT now()
+);
+
+-- 插入管理员（改成你的邮箱）
+INSERT INTO admin_users (email) VALUES ('351688008@qq.com')
+  ON CONFLICT (email) DO NOTHING;
+
+-- 行级安全：只有管理员自己可以查看
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "admin_self" ON admin_users
+  FOR SELECT USING (email = auth.email());
+
+-- 目的地表（可选）
+CREATE TABLE IF NOT EXISTS destinations (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  country text,
+  category text,
+  label text,
+  rating numeric(3,1),
+  img_id text,
+  description text,
+  created_at timestamptz DEFAULT now()
+);
+
+-- 文章表（可选）
+CREATE TABLE IF NOT EXISTS articles (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  title text NOT NULL,
+  author text,
+  tags text,
+  read_count int DEFAULT 0,
+  cover_id text,
+  content text,
+  created_at timestamptz DEFAULT now()
+);
+</pre>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /admin-content -->
+    </main>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- CONFIRM DIALOG -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">⚠️</div>
+    <div class="confirm-title" id="confirmTitle">确认删除</div>
+    <div class="confirm-msg" id="confirmMsg">此操作不可撤销，确认继续？</div>
+    <div class="confirm-btns">
+      <button class="confirm-cancel" onclick="closeConfirm()">取消</button>
+      <button class="confirm-ok" id="confirmOkBtn">删除</button>
+    </div>
+  </div>
+</div>
+
+<!-- DESTINATION MODAL -->
+<div class="modal-overlay" id="destModal">
+  <div class="modal-box">
+    <div class="modal-title">
+      <span id="destModalTitle">添加目的地</span>
+      <button class="modal-close" onclick="closeModal('destModal')">✕</button>
+    </div>
+    <div class="modal-form">
+      <input type="hidden" id="destEditId">
+      <div class="form-row">
+        <div class="form-group">
+          <label>目的地名称 *</label>
+          <input type="text" id="destName" placeholder="如：北京">
+        </div>
+        <div class="form-group">
+          <label>国家/地区</label>
+          <input type="text" id="destCountry" placeholder="如：中国">
+        </div>
+        <div class="form-group">
+          <label>分类</label>
+          <select id="destCategory">
+            <option value="国内">国内</option>
+            <option value="亚洲">亚洲</option>
+            <option value="欧洲">欧洲</option>
+            <option value="美洲">美洲</option>
+            <option value="大洋洲">大洋洲</option>
+            <option value="小众">小众</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>标签</label>
+          <input type="text" id="destLabel" placeholder="如：历史古都">
+        </div>
+        <div class="form-group">
+          <label>评分 (0-5)</label>
+          <input type="number" id="destRating" min="0" max="5" step="0.1" placeholder="4.8">
+        </div>
+        <div class="form-group">
+          <label>Unsplash 图片ID</label>
+          <input type="text" id="destImgId" placeholder="如：1547981609">
+        </div>
+      </div>
+      <div class="form-group full">
+        <label>简介描述</label>
+        <textarea id="destDesc" placeholder="目的地简介..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal('destModal')">取消</button>
+        <button class="btn-save" onclick="saveDest()">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ARTICLE MODAL -->
+<div class="modal-overlay" id="artModal">
+  <div class="modal-box">
+    <div class="modal-title">
+      <span id="artModalTitle">写新攻略</span>
+      <button class="modal-close" onclick="closeModal('artModal')">✕</button>
+    </div>
+    <div class="modal-form">
+      <input type="hidden" id="artEditId">
+      <div class="form-group">
+        <label>文章标题 *</label>
+        <input type="text" id="artTitle" placeholder="攻略标题">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>作者</label>
+          <input type="text" id="artAuthor" placeholder="CJ" value="CJ">
+        </div>
+        <div class="form-group">
+          <label>标签（逗号分隔）</label>
+          <input type="text" id="artTags" placeholder="如：日本,樱花,季节限定">
+        </div>
+        <div class="form-group">
+          <label>封面 Unsplash ID</label>
+          <input type="text" id="artCoverId" placeholder="图片ID">
+        </div>
+        <div class="form-group">
+          <label>阅读量</label>
+          <input type="number" id="artReads" placeholder="0" value="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>文章摘要</label>
+        <textarea id="artSummary" placeholder="一句话简介..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal('artModal')">取消</button>
+        <button class="btn-save" onclick="saveArticle()">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOTEL MODAL -->
+<div class="modal-overlay" id="hotelModal">
+  <div class="modal-box">
+    <div class="modal-title">
+      <span id="hotelModalTitle">添加酒店</span>
+      <button class="modal-close" onclick="closeModal('hotelModal')">✕</button>
+    </div>
+    <div class="modal-form">
+      <input type="hidden" id="hotelEditId">
+      <div class="form-row">
+        <div class="form-group">
+          <label>酒店名称 *</label>
+          <input type="text" id="hotelName" placeholder="酒店名称">
+        </div>
+        <div class="form-group">
+          <label>城市</label>
+          <input type="text" id="hotelCity" placeholder="如：北京">
+        </div>
+        <div class="form-group">
+          <label>星级</label>
+          <select id="hotelStar">
+            <option value="5">五星</option>
+            <option value="4">四星</option>
+            <option value="3">三星</option>
+            <option value="boutique">精品</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>每晚价格（元起）</label>
+          <input type="number" id="hotelPrice" placeholder="如：680">
+        </div>
+        <div class="form-group">
+          <label>评分 (0-5)</label>
+          <input type="number" id="hotelRating" min="0" max="5" step="0.1" placeholder="4.9">
+        </div>
+        <div class="form-group">
+          <label>Unsplash 图片ID</label>
+          <input type="text" id="hotelImgId" placeholder="图片ID">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>酒店描述</label>
+        <textarea id="hotelDesc" placeholder="酒店简介..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal('hotelModal')">取消</button>
+        <button class="btn-save" onclick="saveHotel()">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== SUPABASE INIT =====
+const SUPABASE_URL = 'https://vlxmozvgbxxpgbiddzkm.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_AAtzomCzMso5kLlyDe5PQw_bWEKnHG9';
+
+// 管理员邮箱白名单（前端校验 + 数据库双重保障）
+const ADMIN_EMAILS = ['351688008@qq.com', 'admin@cjtravel.com'];
+
+let sb = null;
+let adminUser = null;
+
+function getSupabase() {
+  if (!sb && window.supabase) {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+  return sb;
+}
+
+// ===== DEMO DATA =====
+const DEMO_DESTINATIONS = [
+  { id:'d1', name:'北京', country:'中国', category:'国内', label:'历史古都', rating:4.9, imgId:'1547981609' },
+  { id:'d2', name:'成都', country:'中国', category:'国内', label:'美食天堂', rating:4.8, imgId:'1590559899731' },
+  { id:'d3', name:'西安', country:'中国', category:'国内', label:'丝路起点', rating:4.7, imgId:'1545569341' },
+  { id:'d4', name:'桂林', country:'中国', category:'国内', label:'山水之美', rating:4.8, imgId:'1599571234909' },
+  { id:'d5', name:'拉萨', country:'中国', category:'国内', label:'神圣之城', rating:4.9, imgId:'1600269452121' },
+  { id:'d6', name:'东京', country:'日本', category:'亚洲', label:'现代与传统', rating:4.9, imgId:'1536098561742' },
+  { id:'d7', name:'巴黎', country:'法国', category:'欧洲', label:'艺术之都', rating:4.8, imgId:'1502602898657' },
+  { id:'d8', name:'马尔代夫', country:'马尔代夫', category:'小众', label:'天堂海岛', rating:4.9, imgId:'1514282401047' },
+];
+
+const DEMO_ARTICLES = [
+  { id:'a1', title:'云南小众秘境探索指南', author:'CJ', tags:'云南,小众,文化', readCount:12400, coverId:'1600269452121' },
+  { id:'a2', title:'2026日本樱花季完全攻略', author:'溪溪', tags:'日本,樱花,季节限定', readCount:28700, coverId:'1493976040374' },
+  { id:'a3', title:'欧洲火车旅行完全指南', author:'CJ', tags:'欧洲,火车,交通指南', readCount:19500, coverId:'1502602898657' },
+  { id:'a4', title:'海岛选岛终极攻略', author:'溪溪', tags:'海岛,选岛攻略,度假', readCount:31200, coverId:'1514282401047' },
+  { id:'a5', title:'秋日长白山：天池最美季节', author:'CJ', tags:'国内,秋季,自然风光', readCount:8900, coverId:'1599661046289' },
+];
+
+const DEMO_HOTELS = [
+  { id:'h1', name:'北京颐和安缦', city:'北京', star:'5', price:4800, rating:4.9, imgId:'1547981609' },
+  { id:'h2', name:'成都博舍', city:'成都', star:'5', price:2600, rating:4.8, imgId:'1590559899731' },
+  { id:'h3', name:'西安宋都·古城唐朝假日', city:'西安', star:'4', price:880, rating:4.6, imgId:'1545569341' },
+  { id:'h4', name:'拉萨瑞吉度假酒店', city:'拉萨', star:'5', price:2200, rating:4.9, imgId:'1600269452121' },
+  { id:'h5', name:'东京半岛酒店', city:'东京', star:'5', price:3800, rating:4.9, imgId:'1536098561742' },
+  { id:'h6', name:'巴黎丽兹酒店', city:'巴黎', star:'5', price:6500, rating:4.8, imgId:'1502602898657' },
+];
+
+// ===== LOGIN =====
+async function doAdminLogin() {
+  var email = document.getElementById('adminEmail').value.trim();
+  var pwd = document.getElementById('adminPwd').value;
+  var errEl = document.getElementById('loginError');
+  var btn = document.getElementById('loginBtn');
+
+  if (!email || !pwd) {
+    errEl.textContent = '请填写邮箱和密码';
+    return;
+  }
+
+  btn.innerHTML = '<span class="spinner"></span>验证中...';
+  btn.disabled = true;
+  errEl.textContent = '';
+
+  var client = getSupabase();
+  if (!client) {
+    // 演示模式
+    if (ADMIN_EMAILS.includes(email) && pwd.length >= 6) {
+      adminUser = { email: email };
+      enterAdmin();
+    } else {
+      errEl.textContent = '邮箱或密码错误，或无管理员权限';
+    }
+    btn.innerHTML = '登录管理后台';
+    btn.disabled = false;
+    return;
+  }
+
+  try {
+    var { data, error } = await client.auth.signInWithPassword({ email, password: pwd });
+    if (error) {
+      errEl.textContent = error.message === 'Invalid login credentials'
+        ? '邮箱或密码错误' : error.message;
+      btn.innerHTML = '登录管理后台';
+      btn.disabled = false;
+      return;
+    }
+
+    // 检查是否在管理员白名单
+    if (!ADMIN_EMAILS.includes(data.user.email)) {
+      await client.auth.signOut();
+      errEl.textContent = '您没有管理员权限';
+      btn.innerHTML = '登录管理后台';
+      btn.disabled = false;
+      return;
+    }
+
+    adminUser = data.user;
+    enterAdmin();
+  } catch(e) {
+    // 降级演示模式
+    if (ADMIN_EMAILS.includes(email) && pwd.length >= 6) {
+      adminUser = { email: email };
+      enterAdmin();
+    } else {
+      errEl.textContent = '邮箱或密码错误，或无管理员权限';
+    }
+  }
+
+  btn.innerHTML = '登录管理后台';
+  btn.disabled = false;
+}
+
+function enterAdmin() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('adminPage').style.display = 'flex';
+
+  var email = adminUser.email || '管理员';
+  document.getElementById('sidebarEmail').textContent = email;
+  document.getElementById('sidebarAvatar').textContent = email.charAt(0).toUpperCase();
+
+  initDemoData();
+  loadUserCount();
+}
+
+async function doAdminLogout() {
+  var client = getSupabase();
+  if (client) await client.auth.signOut();
+  adminUser = null;
+  document.getElementById('adminPage').style.display = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('adminEmail').value = '';
+  document.getElementById('adminPwd').value = '';
+}
+
+// ===== SECTION NAVIGATION =====
+function showSection(name) {
+  var sections = document.querySelectorAll('.admin-section');
+  sections.forEach(function(s) { s.classList.remove('active'); });
+  var el = document.getElementById('sec-' + name);
+  if (el) el.classList.add('active');
+
+  var items = document.querySelectorAll('.sidebar-item');
+  items.forEach(function(item) {
+    item.classList.toggle('active', item.dataset.section === name);
+  });
+
+  var titles = {
+    dashboard: '控制台',
+    destinations: '目的地管理',
+    articles: '游记攻略管理',
+    hotels: '精品酒店管理',
+    users: '用户管理',
+    settings: '网站设置'
+  };
+  document.getElementById('topbarTitle').textContent = titles[name] || name;
+
+  // Close mobile sidebar
+  closeSidebar();
+}
+
+// ===== SIDEBAR MOBILE =====
+function toggleSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('sidebarOverlay');
+  sidebar.classList.toggle('mobile-open');
+  overlay.classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
+// ===== DEMO DATA INIT =====
+function initDemoData() {
+  renderDestTable(DEMO_DESTINATIONS);
+  renderArticleTable(DEMO_ARTICLES);
+  renderHotelTable(DEMO_HOTELS);
+}
+
+// ===== DESTINATIONS TABLE =====
+function renderDestTable(data) {
+  var tbody = document.getElementById('destTableBody');
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>暂无数据</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(function(d) {
+    var catColor = {国内:'badge-green',亚洲:'badge-blue',欧洲:'badge-orange',小众:'badge-gray'}[d.category] || 'badge-gray';
+    return '<tr data-search="' + (d.name+d.country+d.category+d.label).toLowerCase() + '">' +
+      '<td><div style="display:flex;align-items:center;gap:10px">' +
+      '<div class="table-img-bg" style="background-image:url(https://images.unsplash.com/photo-' + d.imgId + '?w=100&h=70&fit=crop&q=80)"></div>' +
+      '<div><div style="font-weight:600">' + d.name + '</div><div style="font-size:12px;color:var(--text-sub)">' + d.country + '</div></div>' +
+      '</div></td>' +
+      '<td class="hide-mobile"><span class="badge ' + catColor + '">' + d.category + '</span></td>' +
+      '<td class="hide-mobile">' + d.label + '</td>' +
+      '<td class="hide-mobile"><span style="color:var(--accent);font-weight:700">★ ' + d.rating + '</span></td>' +
+      '<td><button class="act-btn act-edit" onclick="editDest(\'' + d.id + '\')">编辑</button> ' +
+      '<button class="act-btn act-del" onclick="deleteDest(\'' + d.id + '\')">删除</button></td>' +
+      '</tr>';
+  }).join('');
+}
+
+// ===== ARTICLES TABLE =====
+function renderArticleTable(data) {
+  var tbody = document.getElementById('artTableBody');
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>暂无数据</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(function(a) {
+    return '<tr data-search="' + (a.title+a.author+a.tags).toLowerCase() + '">' +
+      '<td><div style="font-weight:600;max-width:280px">' + a.title + '</div></td>' +
+      '<td class="hide-mobile"><span class="badge badge-blue">' + a.author + '</span></td>' +
+      '<td class="hide-mobile" style="max-width:200px">' +
+        a.tags.split(',').map(function(t){ return '<span class="badge badge-gray" style="margin:1px">' + t.trim() + '</span>'; }).join('') +
+      '</td>' +
+      '<td class="hide-mobile" style="color:var(--text-sub)">' + (a.readCount/1000).toFixed(1) + 'k</td>' +
+      '<td><button class="act-btn act-edit" onclick="editArticle(\'' + a.id + '\')">编辑</button> ' +
+      '<button class="act-btn act-del" onclick="deleteArticle(\'' + a.id + '\')">删除</button></td>' +
+      '</tr>';
+  }).join('');
+}
+
+// ===== HOTELS TABLE =====
+function renderHotelTable(data) {
+  var tbody = document.getElementById('hotelTableBody');
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><p>暂无数据</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(function(h) {
+    var starStr = h.star === 'boutique' ? '精品' : '★'.repeat(parseInt(h.star)) + ' ' + h.star + '星';
+    return '<tr data-search="' + (h.name+h.city).toLowerCase() + '">' +
+      '<td><div style="display:flex;align-items:center;gap:10px">' +
+      '<div class="table-img-bg" style="background-image:url(https://images.unsplash.com/photo-' + h.imgId + '?w=100&h=70&fit=crop&q=80)"></div>' +
+      '<div style="font-weight:600">' + h.name + '</div>' +
+      '</div></td>' +
+      '<td class="hide-mobile">' + h.city + '</td>' +
+      '<td class="hide-mobile"><span class="badge badge-orange">' + starStr + '</span></td>' +
+      '<td class="hide-mobile" style="font-weight:700;color:var(--primary)">¥' + h.price.toLocaleString() + '/晚</td>' +
+      '<td><button class="act-btn act-edit" onclick="editHotel(\'' + h.id + '\')">编辑</button> ' +
+      '<button class="act-btn act-del" onclick="deleteHotel(\'' + h.id + '\')">删除</button></td>' +
+      '</tr>';
+  }).join('');
+}
+
+// ===== TABLE SEARCH FILTER =====
+function filterTable(tableId, query) {
+  var q = query.toLowerCase();
+  var rows = document.querySelectorAll('#' + tableId + ' tbody tr');
+  rows.forEach(function(row) {
+    var searchVal = (row.dataset.search || row.textContent).toLowerCase();
+    row.style.display = searchVal.includes(q) ? '' : 'none';
+  });
+}
+
+// ===== DESTINATION MODAL =====
+var destEditingId = null;
+function openDestModal(id) {
+  destEditingId = id || null;
+  document.getElementById('destModalTitle').textContent = id ? '编辑目的地' : '添加目的地';
+  if (!id) {
+    ['destName','destCountry','destLabel','destRating','destImgId','destDesc'].forEach(function(f){ document.getElementById(f).value=''; });
+    document.getElementById('destCategory').value='国内';
+  }
+  document.getElementById('destModal').classList.add('show');
+}
+function editDest(id) {
+  var item = DEMO_DESTINATIONS.find(function(d){ return d.id === id; });
+  if (!item) return;
+  document.getElementById('destName').value = item.name || '';
+  document.getElementById('destCountry').value = item.country || '';
+  document.getElementById('destCategory').value = item.category || '国内';
+  document.getElementById('destLabel').value = item.label || '';
+  document.getElementById('destRating').value = item.rating || '';
+  document.getElementById('destImgId').value = item.imgId || '';
+  document.getElementById('destDesc').value = item.desc || '';
+  openDestModal(id);
+}
+function saveDest() {
+  var name = document.getElementById('destName').value.trim();
+  if (!name) { showToast('请填写目的地名称', 'error'); return; }
+  var newItem = {
+    id: destEditingId || ('d' + Date.now()),
+    name: name,
+    country: document.getElementById('destCountry').value,
+    category: document.getElementById('destCategory').value,
+    label: document.getElementById('destLabel').value,
+    rating: parseFloat(document.getElementById('destRating').value) || 4.5,
+    imgId: document.getElementById('destImgId').value || '1547981609',
+    desc: document.getElementById('destDesc').value
+  };
+  if (destEditingId) {
+    var idx = DEMO_DESTINATIONS.findIndex(function(d){ return d.id === destEditingId; });
+    if (idx >= 0) DEMO_DESTINATIONS[idx] = newItem;
+  } else {
+    DEMO_DESTINATIONS.unshift(newItem);
+  }
+  renderDestTable(DEMO_DESTINATIONS);
+  closeModal('destModal');
+  showToast(destEditingId ? '目的地已更新' : '目的地已添加', 'success');
+  document.getElementById('statDest').textContent = DEMO_DESTINATIONS.length;
+}
+function deleteDest(id) {
+  showConfirm('删除目的地', '删除后无法恢复，确认删除？', function() {
+    var idx = DEMO_DESTINATIONS.findIndex(function(d){ return d.id === id; });
+    if (idx >= 0) DEMO_DESTINATIONS.splice(idx, 1);
+    renderDestTable(DEMO_DESTINATIONS);
+    showToast('已删除', 'success');
+    document.getElementById('statDest').textContent = DEMO_DESTINATIONS.length;
+  });
+}
+
+// ===== ARTICLE MODAL =====
+var artEditingId = null;
+function openArticleModal(id) {
+  artEditingId = id || null;
+  document.getElementById('artModalTitle').textContent = id ? '编辑攻略' : '写新攻略';
+  if (!id) {
+    ['artTitle','artTags','artCoverId','artSummary'].forEach(function(f){ document.getElementById(f).value=''; });
+    document.getElementById('artAuthor').value = 'CJ';
+    document.getElementById('artReads').value = '0';
+  }
+  document.getElementById('artModal').classList.add('show');
+}
+function editArticle(id) {
+  var item = DEMO_ARTICLES.find(function(a){ return a.id === id; });
+  if (!item) return;
+  document.getElementById('artTitle').value = item.title;
+  document.getElementById('artAuthor').value = item.author;
+  document.getElementById('artTags').value = item.tags;
+  document.getElementById('artCoverId').value = item.coverId || '';
+  document.getElementById('artReads').value = item.readCount;
+  document.getElementById('artSummary').value = item.summary || '';
+  openArticleModal(id);
+}
+function saveArticle() {
+  var title = document.getElementById('artTitle').value.trim();
+  if (!title) { showToast('请填写文章标题', 'error'); return; }
+  var newItem = {
+    id: artEditingId || ('a' + Date.now()),
+    title: title,
+    author: document.getElementById('artAuthor').value || 'CJ',
+    tags: document.getElementById('artTags').value,
+    coverId: document.getElementById('artCoverId').value,
+    readCount: parseInt(document.getElementById('artReads').value) || 0,
+    summary: document.getElementById('artSummary').value
+  };
+  if (artEditingId) {
+    var idx = DEMO_ARTICLES.findIndex(function(a){ return a.id === artEditingId; });
+    if (idx >= 0) DEMO_ARTICLES[idx] = newItem;
+  } else {
+    DEMO_ARTICLES.unshift(newItem);
+  }
+  renderArticleTable(DEMO_ARTICLES);
+  closeModal('artModal');
+  showToast(artEditingId ? '攻略已更新' : '攻略已添加', 'success');
+  document.getElementById('statArt').textContent = DEMO_ARTICLES.length;
+}
+function deleteArticle(id) {
+  showConfirm('删除攻略', '删除后无法恢复，确认删除？', function() {
+    var idx = DEMO_ARTICLES.findIndex(function(a){ return a.id === id; });
+    if (idx >= 0) DEMO_ARTICLES.splice(idx, 1);
+    renderArticleTable(DEMO_ARTICLES);
+    showToast('已删除', 'success');
+    document.getElementById('statArt').textContent = DEMO_ARTICLES.length;
+  });
+}
+
+// ===== HOTEL MODAL =====
+var hotelEditingId = null;
+function openHotelModal(id) {
+  hotelEditingId = id || null;
+  document.getElementById('hotelModalTitle').textContent = id ? '编辑酒店' : '添加酒店';
+  if (!id) {
+    ['hotelName','hotelCity','hotelPrice','hotelRating','hotelImgId','hotelDesc'].forEach(function(f){ document.getElementById(f).value=''; });
+    document.getElementById('hotelStar').value='5';
+  }
+  document.getElementById('hotelModal').classList.add('show');
+}
+function editHotel(id) {
+  var item = DEMO_HOTELS.find(function(h){ return h.id === id; });
+  if (!item) return;
+  document.getElementById('hotelName').value = item.name;
+  document.getElementById('hotelCity').value = item.city;
+  document.getElementById('hotelStar').value = item.star;
+  document.getElementById('hotelPrice').value = item.price;
+  document.getElementById('hotelRating').value = item.rating;
+  document.getElementById('hotelImgId').value = item.imgId || '';
+  document.getElementById('hotelDesc').value = item.desc || '';
+  openHotelModal(id);
+}
+function saveHotel() {
+  var name = document.getElementById('hotelName').value.trim();
+  if (!name) { showToast('请填写酒店名称', 'error'); return; }
+  var newItem = {
+    id: hotelEditingId || ('h' + Date.now()),
+    name: name,
+    city: document.getElementById('hotelCity').value,
+    star: document.getElementById('hotelStar').value,
+    price: parseInt(document.getElementById('hotelPrice').value) || 0,
+    rating: parseFloat(document.getElementById('hotelRating').value) || 4.5,
+    imgId: document.getElementById('hotelImgId').value || '1547981609',
+    desc: document.getElementById('hotelDesc').value
+  };
+  if (hotelEditingId) {
+    var idx = DEMO_HOTELS.findIndex(function(h){ return h.id === hotelEditingId; });
+    if (idx >= 0) DEMO_HOTELS[idx] = newItem;
+  } else {
+    DEMO_HOTELS.unshift(newItem);
+  }
+  renderHotelTable(DEMO_HOTELS);
+  closeModal('hotelModal');
+  showToast(hotelEditingId ? '酒店已更新' : '酒店已添加', 'success');
+  document.getElementById('statHotel').textContent = DEMO_HOTELS.length;
+}
+function deleteHotel(id) {
+  showConfirm('删除酒店', '删除后无法恢复，确认删除？', function() {
+    var idx = DEMO_HOTELS.findIndex(function(h){ return h.id === id; });
+    if (idx >= 0) DEMO_HOTELS.splice(idx, 1);
+    renderHotelTable(DEMO_HOTELS);
+    showToast('已删除', 'success');
+    document.getElementById('statHotel').textContent = DEMO_HOTELS.length;
+  });
+}
+
+// ===== LOAD USER COUNT =====
+async function loadUserCount() {
+  var client = getSupabase();
+  if (!client) return;
+  try {
+    var { count } = await client.from('profiles').select('*', { count: 'exact', head: true });
+    if (count !== null) {
+      document.getElementById('statUsers').textContent = count;
+    }
+  } catch(e) {
+    // Silently ignore
+  }
+}
+
+// ===== MODAL UTILS =====
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+// ===== CONFIRM DIALOG =====
+var confirmCallback = null;
+function showConfirm(title, msg, callback) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').textContent = msg;
+  confirmCallback = callback;
+  document.getElementById('confirmOverlay').classList.add('show');
+  document.getElementById('confirmOkBtn').onclick = function() {
+    closeConfirm();
+    if (confirmCallback) confirmCallback();
+  };
+}
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('show');
+  confirmCallback = null;
+}
+
+// ===== TOAST =====
+var toastTimer = null;
+function showToast(msg, type) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() {
+    el.className = 'toast';
+  }, 3000);
+}
+
+// ===== CHECK SESSION ON LOAD =====
+window.addEventListener('load', async function() {
+  var client = getSupabase();
+  if (client) {
+    try {
+      var { data } = await client.auth.getSession();
+      if (data.session && ADMIN_EMAILS.includes(data.session.user.email)) {
+        adminUser = data.session.user;
+        enterAdmin();
+        return;
+      }
+    } catch(e) {}
+  }
+  // Show login page
+  document.getElementById('loginPage').style.display = 'flex';
+});
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) overlay.classList.remove('show');
+  });
+});
+</script>
+</body>
+</html>
